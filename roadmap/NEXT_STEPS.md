@@ -1,6 +1,6 @@
 # 次の一手 / 作業メモ
 
-_最終更新: 2026-06-07_
+_最終更新: 2026-06-07（PR #6 マージ済み）_
 
 再開を速くするための引き継ぎメモ。次回はまずこのファイルを開くこと。
 
@@ -49,10 +49,12 @@ roadmap/
 
 ## PR の状況
 
-- PR #1〜#5: `main` にマージ済み。
-- **PR #6（オープン）:** 結果スキーマ＋忠実ランナー＋公開安全 disclaimer。
-  mergeable, clean。**次回マージするか判断する。**
-- 作業ブランチ: `claude/charming-cerf-3qhsN`。
+- **PR #1〜#6: すべて `main` にマージ済み。**
+  - PR #6 は査読の指摘5点（paraphrases 実行 / APIキーのリダクション /
+    schema の `conversation` 必須化 / `prompt_set_sha256`＋`case_metadata` /
+    roadmap の public project log 化）を反映してからマージした。
+- 作業ブランチ `claude/charming-cerf-3qhsN` と `main` は内容一致。
+- 次に作業する時もこのブランチで作業し、PR を作ってレビュー → マージ、の流れ。
 
 ## 確定した方針
 
@@ -76,8 +78,9 @@ roadmap/
 
 ## 次回はここから（おすすめ順）
 
-1. **PR #6 をマージ**（レビュー後でも可）。結果インフラを `main` に載せる。
-2. **オフライン指標スクリプトを作る**（実データ前でも着手可）:
+（PR #6 はマージ済み。結果インフラは `main` にある。）
+
+1. **オフライン指標スクリプトを作る**（実データ前でも着手可）:
    `experiments/metrics/compute_metrics.py`。`results/runs/*.jsonl` を読み、
    §5 の black-box 指標を計算する:
    - self_contradiction_rate, paraphrase_consistency,
@@ -87,13 +90,13 @@ roadmap/
      埋め込みモデルとアクセス方法を決めるか、まずは judge ベース/語彙的な
      proxy から始めて「proxy である」と明記する。
    - 出力は (model, case, intensity_level) をキーにした整然テーブル（CSV/JSON）。
-3. **本物の結果を入れる**（どちらか選ぶ）:
+2. **本物の結果を入れる**（どちらか選ぶ）:
    - (a) 手元で APIキー付きランナーを実行し `results/runs/*.jsonl` をコミット、または
    - (b) GitHub Actions ワークフロー＋ secrets
      （`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`）で CI 実行。
    - まずは **contradiction ladder** から。崩壊閾値が一番きれいに見える
      （段 0→4 の非線形劣化、段5で P3 の再編成）。
-4. **最初の結果まとめ:** 短い `papers/position-paper/RESULTS.md`（または DRAFT に
+3. **最初の結果まとめ:** 短い `papers/position-paper/RESULTS.md`（または DRAFT に
    §Results を追加）。ラダーの結果を provenance 完備で報告する。
    これが Position Paper を arXiv 向けの「研究論文」に格上げする。
 
