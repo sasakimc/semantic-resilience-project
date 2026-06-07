@@ -50,42 +50,68 @@ Recovery occurs not as a simple return to the prior state, but as **reorganizati
 
 ## 5. Falsifiable Predictions
 
-The theory earns scientific status only if it commits to predictions that observation could refute. We therefore state the following predictions, each paired with an explicit **falsifier** — the observation that would count as evidence against it. These predictions are *provisional* and intended to be operationalized through the Stress Testing Framework (§6).
+The theory earns scientific status only if it commits to predictions that observation could refute. We therefore state the following predictions, each made operational at two levels of access:
 
-**P1 — Cognitive stress changes internal spectral structure.**
-We predict that applying cognitive stress (contradiction, ambiguity, load) produces a measurable change in the spectral structure of the LLM's internal representations.
-*Falsifier:* if internal spectral structure remains statistically indistinguishable under increasing stress while behavioral failure nonetheless rises, the prediction is wrong.
+- a **white-box version** for open-weight models, where activations, attention, and representational subspaces are observable;
+- a **black-box version** for closed commercial models (e.g., Claude, GPT, Gemini), where only inputs and outputs are observable.
 
-**P2 — Hallucination correlates with mode-level instability.**
-We predict that hallucination correlates with the over-dominance, mis-binding, or destabilization of semantic modes, rather than being independent of internal representational structure.
-*Falsifier:* if hallucinated and faithful outputs show no systematic difference in mode-level signatures (over a controlled, matched comparison), the prediction is wrong.
+Each prediction lists *candidate metrics*, the *required observables*, and an explicit **falsifier** — the observation that would count as evidence against it. All predictions are *provisional* and are operationalized through the Stress Testing Framework (§6).
+
+**P1 — Cognitive stress changes the internal/behavioral structure of meaning.**
+We predict that applying cognitive stress (contradiction, ambiguity, load) produces a measurable change in the structure of the model's representations or, externally, its semantic behavior.
+- *White-box version:* stress shifts the spectral structure of internal representations. *Candidate metrics:* spectral entropy, effective rank, participation ratio, top-k singular-value concentration, attention entropy. *Required observables:* layer-wise activations and attention matrices under graded stress.
+- *Black-box version:* stress increases instability in output behavior. *Candidate metrics:* embedding-trajectory drift, consistency under paraphrase, degradation under long-context stress. *Required observables:* repeated/paraphrased queries and their output embeddings.
+- *Falsifier:* if these measures remain statistically indistinguishable as stress increases while behavioral failure nonetheless rises, the prediction is wrong.
+
+**P2 — Hallucination correlates with mode-level / behavioral instability.**
+We predict that hallucination correlates with the over-dominance, mis-binding, or destabilization of semantic modes, rather than being independent of representational structure.
+- *White-box version:* hallucinated outputs show distinct spectral signatures. *Candidate metrics:* effective rank collapse or runaway top-1 singular-value concentration, attention-head concentration, activation-norm instability. *Required observables:* matched hallucinated vs. faithful generations with internal traces.
+- *Black-box version:* hallucination co-occurs with measurable behavioral instability. *Candidate metrics:* self-contradiction rate, hallucination persistence, sensitivity to prompt perturbation. *Required observables:* matched item sets graded for factual correctness.
+- *Falsifier:* if hallucinated and faithful outputs show no systematic difference in these signatures over a controlled, matched comparison, the prediction is wrong.
 
 **P3 — Recovery is reorganizational, not restorative.**
-We predict that after induced collapse, recovery prompts or external grounding yield a representation that is *reorganized* — measurably different from the original — rather than restored to the pre-collapse state.
-*Falsifier:* if post-recovery representations are statistically indistinguishable from pre-collapse representations (a true return to baseline), the prediction is wrong.
+We predict that after induced collapse, recovery prompts or external grounding yield a *reorganized* state — measurably different from the original — rather than a return to the pre-collapse state.
+- *White-box version:* the post-recovery representational subspace differs from the pre-collapse subspace. *Candidate metrics:* subspace drift, principal angles between pre- and post-recovery subspaces, layer-wise representational drift. *Required observables:* representations at baseline, post-collapse, and post-recovery.
+- *Black-box version:* recovered behavior differs measurably from baseline behavior even when surface correctness is restored. *Candidate metrics:* recovery success rate, residual semantic distance to baseline answers, change in paraphrase-consistency profile. *Required observables:* baseline → collapse → recovery answer triples.
+- *Falsifier:* if post-recovery measures are statistically indistinguishable from pre-collapse baseline (a true return to baseline), the prediction is wrong.
 
-**P4 — Human cognitive-distortion conditions induce analogous mode bias in LLMs.**
-We predict that prompt conditions designed to mirror human cognitive distortions may induce analogous biases in an LLM's semantic modes (e.g., concentration/fixation signatures).
-*Falsifier:* if distortion-mirroring prompts produce no systematic mode-level bias relative to matched neutral prompts, the analogy fails at the representational level (even if surface behavior differs).
+**P4 — Human cognitive-distortion conditions induce analogous bias in LLMs.**
+We predict that prompt conditions designed to mirror human cognitive distortions may induce analogous biases in an LLM's semantic modes (concentration / fixation signatures).
+- *White-box version:* distortion-mirroring prompts increase mode concentration. *Candidate metrics:* participation ratio, top-k concentration, spectral entropy relative to matched neutral prompts. *Required observables:* paired distortion vs. neutral activations.
+- *Black-box version:* distortion-mirroring prompts increase a behavioral distortion signature. *Candidate metrics:* cognitive distortion score, self-contradiction rate, reduced consistency under paraphrase. *Required observables:* paired distortion vs. neutral prompt sets.
+- *Falsifier:* if distortion-mirroring prompts produce no systematic bias relative to matched neutral prompts at either level, the analogy fails representationally (even if surface behavior differs).
 
-We note that confirming a correlation (e.g., P2) is not yet establishing causation; §6 and §7 are designed so that interventions, not only observations, can be brought to bear.
+We emphasize that confirming a correlation (e.g., P2) is not yet establishing causation; §6 is designed so that graded interventions, not only passive observations, can be brought to bear, moving the program toward causal tests over time.
+
 
 ---
 
 ## 6. The Stress Testing Framework
 
-We position the Stress Testing Framework not as a benchmark but as the **experimental apparatus by which Semantic Mode Theory is tested, falsified, and refined.** Each stressor is designed to drive the system through the lifecycle of §4 and to test specific predictions from §5. For each, we measure three quantities: **semantic robustness** (degradation under stress), **collapse threshold** (the critical point of non-linear breakdown), and **recoverability** (whether and how the system reorganizes afterward).
+We position the Stress Testing Framework not as a benchmark but as the **experimental apparatus by which Semantic Mode Theory is tested, falsified, and refined.** Each stressor is designed to drive the system through the lifecycle of §4 and to test specific predictions from §5. For every condition we measure three quantities: **semantic robustness** (degradation under stress), **collapse threshold** (the critical point of non-linear breakdown), and **recoverability** (whether and how the system reorganizes afterward).
 
-| Stressor | Intended effect (lifecycle) | Primarily tests |
-|---|---|---|
-| **Contradiction stress** | drive Distortion → Collapse via incompatible constraints | P1, P2 |
-| **Ambiguity stress** | probe mode competition under under-determined input | P1, P2 |
-| **Long-context stress** | probe mode maintenance and drift over extended context | P1, P2 |
-| **Value-conflict stress** | induce collapse via conflicting objectives/values | P2 |
-| **Cognitive-distortion prompts** | induce human-distortion-analogous mode bias | P4 |
-| **Self-correction and recovery prompts** | induce Recovery; test reorganization vs. restoration | P3 |
+### 6.1 Two levels of access: black-box and white-box
 
-For each stressor we (i) define a graded intensity scale, (ii) record behavioral outcomes and the corresponding internal mode-level signatures, and (iii) compare against matched control conditions, so that observations feed directly back into the predictions of §5.
+A central design choice is that the framework operates at two levels of access, so that the program is realizable for an external researcher today and deepens as model access improves:
+
+> Closed commercial models such as Claude, GPT, and Gemini may initially be studied through **black-box stress testing**, using output behavior, semantic trajectories, consistency, and recoverability as observable signals. **Open-weight models** may additionally support **white-box modal analysis** through activations, attention matrices, and representational subspaces.
+
+This two-layer structure gives the program immediate traction — black-box stress testing can begin now, with no internal access — while reserving deeper mechanistic, white-box modal analysis for open-weight models and for future settings where internal access is available.
+
+### 6.2 Stressors as experiments
+
+| Stressor | Target prediction | Input design | Expected failure mode | Candidate metrics | Recovery intervention |
+|---|---|---|---|---|---|
+| **Contradiction stress** | P1, P2 | Inject mutually incompatible premises/constraints at graded intensity | Distortion → Collapse: self-contradiction, oscillation, confident error | BB: self-contradiction rate, hallucination persistence · WB: effective rank, spectral entropy | Point out the conflict; ask the model to localize and resolve it |
+| **Ambiguity stress** | P1, P2 | Under-determined prompts with multiple valid readings | Mode competition; premature commitment to one reading | BB: consistency under paraphrase, answer-distribution spread · WB: participation ratio, attention entropy | Request explicit enumeration of interpretations before answering |
+| **Long-context stress** | P1, P2 | Extend context; bury key constraints at varying depths | Drift, loss of earlier modes, position-dependent degradation | BB: degradation vs. context length, embedding-trajectory drift · WB: layer-wise representational drift, subspace drift | Re-surface key constraints; ask for a grounded summary |
+| **Value-conflict stress** | P2 | Conflicting objectives/values within one instruction | Collapse into incoherence, evasion, or unstable preference | BB: self-contradiction rate, sensitivity to prompt perturbation · WB: attention-head concentration, activation-norm instability | Make the trade-off explicit; request a principled adjudication |
+| **Cognitive-distortion prompts** | P4 | Prompts mirroring human distortions (overgeneralization, catastrophizing, confirmation seeking) | Fixation, biased over-application of one interpretation | BB: cognitive distortion score, reduced paraphrase consistency · WB: top-k concentration, spectral entropy vs. neutral | Offer disconfirming evidence; request perspective-taking |
+| **Self-correction & recovery prompts** | P3 | After induced collapse, prompt for self-correction or supply external grounding | Reorganization into a new state (tested) vs. restoration | BB: recovery success rate, residual distance to baseline · WB: principal angles, subspace drift (pre vs. post) | The intervention *is* the manipulation; compare pre/post structure |
+
+*(BB = black-box metric; WB = white-box metric.)*
+
+For each stressor we (i) define a graded intensity scale, (ii) record behavioral outcomes and, where available, the corresponding internal mode-level signatures, and (iii) compare against matched control conditions, so that observations feed directly back into the predictions of §5.
 
 ---
 
