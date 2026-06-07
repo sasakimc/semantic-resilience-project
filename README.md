@@ -1,119 +1,121 @@
 # Semantic Mode Theory
 
-**脳とAIに共通する「意味の形成・歪み・崩壊・回復」の原理を探究する**
+*English ・ [日本語](README.ja.md)*
+
+**Exploring the principles of how meaning is formed, distorted, collapses, and recovers — in brains and in AI.**
 
 ---
 
-> 本研究プログラムは、複雑システムにおける意味・機能・秩序が、どのように形成され、歪み、崩壊し、そして回復するのかを、脳科学・認知科学・計算科学・AI安全性研究を横断して探究する。
+> This research program investigates how meaning, function, and order in complex systems are formed, become distorted, collapse, and recover — across neuroscience, cognitive science, computational science, and AI safety research.
 
 ---
 
 ## Research Motivation
 
-大規模言語モデル（LLM）が示すハルシネーション、ジェイルブレイク、過剰追従（sycophancy）、アラインメント破綻は、現在それぞれ独立した問題として扱われることが多い。しかし、これらは表層的な症状が異なるだけで、その根底には**意味構造の安定性の喪失**という共通の現象が存在する可能性がある。
+The hallucinations, jailbreaks, sycophancy, and alignment failures exhibited by large language models (LLMs) are currently treated, for the most part, as separate problems. Yet these may differ only at the level of surface symptoms. Beneath them may lie a single shared phenomenon: **the loss of stability in semantic structure.**
 
-同様の現象は人間にも見られる。認知の歪み、思い込み、固着、過剰一般化、自己正当化は、いずれも意味づけのプロセスが特定の方向へ偏り、安定性を失った状態として理解できる。さらに脳のレベルでは、認知症、脳損傷、学習、そして回復の過程において、ネットワークの再構成（reorganization）が繰り返し観察される。
+Comparable phenomena appear in humans. Cognitive distortions, fixed beliefs, rigidity, overgeneralization, and self-justification can all be understood as states in which the process of meaning-making becomes biased in a particular direction and loses its stability. At the level of the brain, reorganization of networks is observed repeatedly across dementia, brain injury, learning, and recovery.
 
-本研究プログラムは、これらの現象を **「意味モードの形成・歪み・崩壊・回復」** という単一の枠組みで捉え直すことを試みる。実装基盤の異なる脳とAIを、共通の動的構造の言語で結びつける新しい研究プログラムを構築することが目的である。
+This research program attempts to reframe these phenomena within a single framework: **the formation, distortion, collapse, and recovery of semantic modes.** Its aim is to build a new research program that connects brains and AI — systems with very different substrates — through a shared language of dynamic structure.
 
 ## Core Hypothesis
 
-- 意味は静的な知識の集合ではなく、ネットワーク内部に形成される**動的なモード構造**である。
-- 認知の歪み、LLMのハルシネーション、推論の崩壊は、意味モードの**不安定化または偏在化**として理解できる可能性がある。
-- 回復とは、失われた意味構造が再び同じ形に戻ることではなく、**新しいモード構造として再編成される過程**である。
-- 脳、認知、LLMは実装は異なるが、**安定性・歪み・崩壊・回復という共通の力学**を持つ可能性がある。
+- Meaning is not a static collection of knowledge, but a **dynamic mode structure** formed within a network.
+- Cognitive distortion, LLM hallucination, and reasoning collapse may be understood as the **destabilization or uneven concentration** of semantic modes.
+- Recovery is not a return of lost semantic structure to its former shape, but a **process of reorganization into a new mode structure.**
+- Brains, cognition, and LLMs differ in implementation, but may share a **common dynamics of stability, distortion, collapse, and recovery.**
 
 ## Background
 
-本研究プログラムは、以下の研究領域の交点に位置づけられる。
+This research program sits at the intersection of the following fields.
 
 ### Deep Linear Networks and Semantic Development
 
-Andrew Saxe らによる深層線形ネットワークの研究は、学習過程において意味階層が段階的に形成されることを示唆している。特異値分解（SVD）やモード解析の枠組みは、意味の形成過程を数学的に記述するための重要な手がかりを与える。
+The work of Andrew Saxe and colleagues on deep linear networks suggests that semantic hierarchies form progressively over the course of learning. Frameworks such as singular value decomposition (SVD) and modal analysis offer important leads for describing the formation of meaning mathematically.
 
 ### Mechanistic Interpretability
 
-Transformer 内部の表現、Attention、回路（circuits）、特徴量を解析する研究群。LLMの内部構造を理解し、意味モードを観測可能な対象とするための基盤となる。
+A body of work that analyzes the internal representations, attention, circuits, and features of Transformers. It provides the foundation for understanding the internal structure of LLMs and for making semantic modes observable.
 
 ### Brain Network Science
 
-コネクトーム、ネットワーク再構成、認知症、神経可塑性などの知見は、生物学的システムにおける意味構造の形成と崩壊・回復の実例を提供する。
+Findings on connectomes, network reorganization, dementia, and neural plasticity provide concrete examples of the formation, collapse, and recovery of semantic structure in biological systems.
 
 ### Cognitive Psychology
 
-認知の歪み、確証バイアス、過度の一般化、自己正当化、破局化（catastrophizing）といった認知心理学の概念は、意味づけの偏りを記述する語彙を与える。
+Concepts from cognitive psychology — cognitive distortion, confirmation bias, overgeneralization, self-justification, and catastrophizing — supply a vocabulary for describing biases in meaning-making.
 
 ### Structural and Computational Systems Thinking
 
-モード解析、安定性、損傷、崩壊、回復、不確実性といった構造・計算システムの視点は、複雑システムに共通する力学を抽象化する枠組みを提供する。
+Perspectives from structural and computational systems — modal analysis, stability, damage, collapse, recovery, and uncertainty — provide a framework for abstracting the dynamics common to complex systems.
 
 ## Ten Research Programs
 
-本研究プログラムは、以下の10の研究課題から構成される。
+This research program consists of the following ten research questions.
 
 ### 1. Semantic Mode Theory
 
-- **問い** — 意味とは何か。
-- **仮説** — 意味は静的な記号対応ではなく、ネットワーク内に形成される動的モードである。
-- **目標** — 意味モードの数学的・計算論的定義を与える。
+- **Question** — What is meaning?
+- **Hypothesis** — Meaning is not a static symbol-to-referent correspondence, but a dynamic mode formed within a network.
+- **Goal** — Provide a mathematical and computational definition of semantic modes.
 
 ### 2. Meaning Formation in Deep Networks
 
-- **問い** — ニューラルネットワークはどのように意味を獲得するのか。
-- **背景** — Saxe らの深層線形ネットワーク理論は、意味階層が学習過程で段階的に形成されることを示唆している。
-- **目標** — 意味形成過程を SVD・PCA・表現解析によりモードとして解析する。
+- **Question** — How do neural networks acquire meaning?
+- **Background** — Saxe et al.'s deep linear network theory suggests that semantic hierarchies form progressively during learning.
+- **Goal** — Analyze the process of meaning formation as modes, using SVD, PCA, and representational analysis.
 
 ### 3. Hallucination as Semantic Mode Instability
 
-- **問い** — なぜLLMはハルシネーションを起こすのか。
-- **仮説** — ハルシネーションは単なる知識欠落ではなく、意味モードの不安定化、過剰支配、または誤結合として理解できる可能性がある。
-- **目標** — 意味崩壊を検出する指標を構築する。
+- **Question** — Why do LLMs hallucinate?
+- **Hypothesis** — Hallucination may be understood not as mere knowledge gaps, but as the destabilization, over-dominance, or mis-binding of semantic modes.
+- **Goal** — Build metrics for detecting semantic collapse.
 
 ### 4. Cognitive Distortion in Humans and LLMs
 
-- **問い** — 人間の認知の歪みとLLMの推論の歪みは対応するのか。
-- **仮説** — 両者は実装は異なるが、過剰一般化、固着、自己正当化、確証バイアス様挙動など、共通する構造を持つ可能性がある。
-- **目標** — 人間とLLMに共通する認知歪み分類体系を作る。
+- **Question** — Do human cognitive distortions correspond to distortions in LLM reasoning?
+- **Hypothesis** — The two differ in implementation, but may share common structure — overgeneralization, fixation, self-justification, and confirmation-bias-like behavior.
+- **Goal** — Create a taxonomy of cognitive distortions shared between humans and LLMs.
 
 ### 5. Semantic Collapse and Recovery
 
-- **問い** — 意味システムはどのように崩壊し、どのように回復するのか。
-- **仮説** — 回復は単なる修復ではなく、新たな意味モードの再編成として起こる。
-- **目標** — 崩壊と回復の力学モデルを構築する。
+- **Question** — How do semantic systems collapse, and how do they recover?
+- **Hypothesis** — Recovery is not mere repair, but occurs as the reorganization of new semantic modes.
+- **Goal** — Build dynamical models of collapse and recovery.
 
 ### 6. Stress Testing of Meaning Systems
 
-- **問い** — 意味システムの限界はどこにあるのか。
-- **方法** — LLMに対して、矛盾、曖昧性、多重制約、価値葛藤、長文文脈、認知的負荷を与える。
-- **目標** — 意味耐性、崩壊閾値、回復可能性を測定する評価フレームワークを作る。
+- **Question** — Where are the limits of meaning systems?
+- **Method** — Subject LLMs to contradiction, ambiguity, multiple constraints, value conflict, long-context, and cognitive load.
+- **Goal** — Build an evaluation framework that measures semantic robustness, collapse thresholds, and recoverability.
 
 ### 7. Brain Network Reorganization and Meaning
 
-- **問い** — 脳はどのように意味を形成し、失い、再構成するのか。
-- **対象** — 認知症、脳損傷、学習、神経可塑性、TBI、アルツハイマー病。
-- **目標** — 脳ネットワーク再構成と意味モードの関係を明らかにする。
+- **Question** — How does the brain form, lose, and reorganize meaning?
+- **Targets** — Dementia, brain injury, learning, neural plasticity, TBI, Alzheimer's disease.
+- **Goal** — Clarify the relationship between brain network reorganization and semantic modes.
 
 ### 8. Attention as Dynamic Semantic Routing
 
-- **問い** — Attention は何をしているのか。
-- **仮説** — Attention は単なる重み付けではなく、意味モード間の動的ルーティングとして理解できる。
-- **目標** — Attention の意味論的・力学的解釈を与える。
+- **Question** — What is attention doing?
+- **Hypothesis** — Attention is not mere weighting, but can be understood as dynamic routing between semantic modes.
+- **Goal** — Provide a semantic and dynamical interpretation of attention.
 
 ### 9. Modal Analysis of Transformer Systems
 
-- **問い** — Transformer 内部のモード構造は観測できるか。
-- **方法** — 重み行列、Attention行列、活性化表現に対して、SVD、PCA、低次元埋め込み、スペクトル解析を適用する。
-- **目標** — 意味モードの可視化と、崩壊・回復時のモード変化の検出。
+- **Question** — Can the mode structure inside a Transformer be observed?
+- **Method** — Apply SVD, PCA, low-dimensional embedding, and spectral analysis to weight matrices, attention matrices, and activation representations.
+- **Goal** — Visualize semantic modes and detect mode changes during collapse and recovery.
 
 ### 10. Toward a Unified Theory of Stability, Distortion, Collapse, and Recovery
 
-- **問い** — 構造物、脳、認知、LLMに共通する安定性原理は存在するか。
-- **仮説** — 複雑適応システムには、安定性、歪み、崩壊、回復に関する共通力学が存在する可能性がある。
-- **目標** — 脳科学、認知科学、計算科学、AI安全性研究を統合する一般理論を構築する。
+- **Question** — Is there a stability principle common to structures, brains, cognition, and LLMs?
+- **Hypothesis** — Complex adaptive systems may share a common dynamics of stability, distortion, collapse, and recovery.
+- **Goal** — Build a general theory that integrates neuroscience, cognitive science, computational science, and AI safety research.
 
 ## Proposed Methods
 
-- SVD / PCA / 低次元表現解析
+- SVD / PCA / low-dimensional representational analysis
 - Transformer activation analysis
 - Attention pattern analysis
 - Cognitive distortion prompt set
@@ -150,27 +152,27 @@ semantic-mode-theory/
 
 ## Initial Milestones
 
-- **Milestone 1** — README と研究プログラムの公開。
-- **Milestone 2** — Position Paper の作成。
-  - 仮タイトル： *Toward a Modal Theory of Meaning Formation, Distortion, Collapse, and Recovery in Large Language Models*
-- **Milestone 3** — LLM ストレステスト用プロンプトセットの作成。
-- **Milestone 4** — 認知歪み分類と LLM 応答の比較分析。
-- **Milestone 5** — SVD/PCA による初期的な意味モード解析。
-- **Milestone 6** — arXiv への Position Paper 投稿。
+- **Milestone 1** — Publish the README and the research program.
+- **Milestone 2** — Write the position paper.
+  - Working title: *Toward a Modal Theory of Meaning Formation, Distortion, Collapse, and Recovery in Large Language Models*
+- **Milestone 3** — Build a prompt set for LLM stress testing.
+- **Milestone 4** — Comparative analysis of cognitive distortion taxonomy and LLM responses.
+- **Milestone 5** — Initial semantic mode analysis via SVD/PCA.
+- **Milestone 6** — Submit the position paper to arXiv.
 
 ## Contribution Policy
 
-本プロジェクトは、現段階では個人研究プロジェクトとして開始する。研究プログラムとしての方向性を固めることを当面の優先事項とする。
+This project begins, at the current stage, as an individual research project. Solidifying the direction of the research program is the immediate priority.
 
-将来的には、以下のような形での参加・協力を歓迎する。
+In the future, the following forms of participation and collaboration are welcome:
 
-- 共同研究
-- 文献レビュー協力
-- 実験設計
-- コード実装
-- LLM 評価
-- 脳科学・認知科学からのコメント
+- Collaborative research
+- Help with literature review
+- Experimental design
+- Code implementation
+- LLM evaluation
+- Comments from neuroscience and cognitive science
 
 ---
 
-本研究プログラムは、脳科学、認知科学、計算科学、AI安全性研究を統合し、「意味の形成・歪み・崩壊・回復」の一般理論を目指すものである。これは完成された理論ではなく、今後の理論化、実験、検証、共同研究に向けた出発点である。
+This research program aims to integrate neuroscience, cognitive science, computational science, and AI safety research toward a general theory of the formation, distortion, collapse, and recovery of meaning. It is not a completed theory, but a starting point for future theorization, experimentation, validation, and collaboration.
