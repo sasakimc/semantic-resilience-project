@@ -2,7 +2,7 @@
 
 **Working title:** *Toward a Modal Theory of Meaning Formation, Distortion, Collapse, and Recovery in Large Language Models*
 
-**Status:** Working draft of the core sections (§3, §4, §5, §6, §11). The full section map lives in [`OUTLINE.md`](OUTLINE.md); candidate metrics are tabulated in [`METRICS_APPENDIX.md`](METRICS_APPENDIX.md). Definitions and predictions marked *(provisional / working hypothesis)* are deliberate starting points to be sharpened by theory and experiment, not settled claims. Throughout, we *propose* and *hypothesize*; we do not claim to have *proven* anything.
+**Status:** Working draft of the core sections (§3, §4, §5, §6, §11). The full section map lives in [`OUTLINE.md`](OUTLINE.md); candidate metrics are tabulated in [`METRICS_APPENDIX.md`](METRICS_APPENDIX.md). *Preliminary and not peer-reviewed.* Definitions and predictions marked *(provisional / working hypothesis)* are deliberate starting points to be sharpened by theory and experiment, not settled claims. Throughout, we *propose* and *hypothesize*; we do not claim to have *proven* anything.
 
 ---
 

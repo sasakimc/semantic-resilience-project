@@ -8,6 +8,8 @@
 
 > This research program investigates how meaning, function, and order in complex systems are formed, become distorted, collapse, and recover — across neuroscience, cognitive science, computational science, and AI safety research.
 
+> **Status:** Preliminary working research program. The claims here are *working hypotheses*, not peer-reviewed results, and the metrics are operational proxies rather than direct measurements of meaning.
+
 ---
 
 ## Why Now?

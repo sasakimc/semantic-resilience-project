@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "results-record/0.1",
+  "title": "Stress-test run record",
+  "description": "One record per (case, repeat). Captures full provenance and the raw model response. Metrics are computed separately, offline; this file stores observations, not conclusions.",
+  "type": "object",
+  "required": [
+    "schema_version", "run_id", "timestamp_utc", "provider", "model",
+    "temperature", "max_tokens", "set_file", "case_id", "repeat_index",
+    "response_text", "synthetic_example"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "run_id": {"type": "string", "description": "Groups all records from one invocation."},
+    "timestamp_utc": {"type": "string", "format": "date-time"},
+    "run_started_utc": {"type": "string", "format": "date-time"},
+    "code_version": {"type": "string", "description": "Git short SHA of the runner/repo at run time."},
+    "provider": {"type": "string", "enum": ["anthropic", "openai", "google"]},
+    "model": {"type": "string", "description": "Model id as requested."},
+    "model_version_reported": {"type": ["string", "null"], "description": "Model id as reported by the API response, if any."},
+    "temperature": {"type": "number"},
+    "max_tokens": {"type": "integer"},
+    "system_prompt": {"type": "string"},
+    "set_file": {"type": "string"},
+    "case_id": {"type": "string"},
+    "stressor": {"type": ["string", "null"]},
+    "intensity": {"type": ["string", "null"]},
+    "intensity_level": {"type": ["integer", "null"]},
+    "target_prediction": {"type": ["string", "null"]},
+    "repeat_index": {"type": "integer"},
+    "is_recovery": {"type": "boolean"},
+    "conversation": {
+      "type": "array",
+      "description": "The exact turns exchanged, in order. For recovery cases the assistant turn between the prior prompt and the recovery prompt is the model's own real response.",
+      "items": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": {"type": "string", "enum": ["user", "assistant"]},
+          "content": {"type": "string"}
+        }
+      }
+    },
+    "response_text": {"type": ["string", "null"], "description": "Final assistant response (null on error or dry-run)."},
+    "prior_response_text": {"type": ["string", "null"], "description": "For recovery cases: the model's response to the collapse-inducing prior turn."},
+    "dry_run": {"type": "boolean"},
+    "error": {"type": ["string", "null"]},
+    "synthetic_example": {"type": "boolean", "description": "MUST be false for real runs. true only for schema illustration files."}
+  }
+}
