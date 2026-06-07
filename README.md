@@ -10,6 +10,40 @@
 
 ---
 
+## Why Now?
+
+Current AI safety research treats hallucination, jailbreaks, alignment failures, and robustness largely as separate phenomena. This project explores the possibility that they are manifestations of a common underlying process: **instability in semantic organization.**
+
+If meaning inside a network has structure, then that structure can be stable or unstable, can concentrate or fragment, can collapse and reorganize. Seen this way, many of the most pressing failure modes of large language models become facets of a single question — *how does meaning hold together, and how does it fall apart?*
+
+## The Core Idea
+
+The program organizes a single arc:
+
+```text
+Meaning → Distortion → Collapse → Recovery
+```
+
+**Working definition (provisional).** A *semantic mode* is a dominant low-dimensional representational structure that organizes semantic behavior within a network. This is a starting point, not a settled definition — giving it a precise mathematical and computational form is itself the first research task (see Theme 1 and the position paper).
+
+## Two Pillars
+
+The program advances on two complementary fronts:
+
+1. **Semantic Mode Theory** — the *explanatory* pillar. What meaning is, how it forms, and how its structure can destabilize, collapse, and reorganize.
+2. **Stress Testing Framework** — the *empirical* pillar. A methodology for probing the limits of meaning systems: subjecting LLMs to contradiction, ambiguity, multiple constraints, value conflict, long context, and cognitive load, and measuring semantic robustness, collapse thresholds, and recoverability.
+
+The theory makes the framework interpretable; the framework makes the theory testable.
+
+## Core Research Themes
+
+Four themes orient the entire program before the detailed questions below:
+
+- **Semantic Modes** — meaning as dynamic, low-dimensional structure rather than a static set of facts.
+- **Distortion** — how that structure becomes biased: overgeneralization, fixation, self-justification, confirmation-bias-like behavior (in humans and in LLMs).
+- **Collapse** — how meaning destabilizes: hallucination, reasoning breakdown, the over-dominance or mis-binding of modes.
+- **Recovery** — not a return to the former shape, but reorganization into a new mode structure.
+
 ## Research Motivation
 
 The hallucinations, jailbreaks, sycophancy, and alignment failures exhibited by large language models (LLMs) are currently treated, for the most part, as separate problems. Yet these may differ only at the level of surface symptoms. Beneath them may lie a single shared phenomenon: **the loss of stability in semantic structure.**
@@ -51,7 +85,7 @@ Perspectives from structural and computational systems — modal analysis, stabi
 
 ## Ten Research Programs
 
-This research program consists of the following ten research questions.
+The four themes and two pillars above unfold into ten concrete research questions. Programs 1–5 and 7–10 develop the **theory** pillar; **Program 6 (Stress Testing)** is the empirical pillar in detail.
 
 ### 1. Semantic Mode Theory
 
