@@ -57,7 +57,7 @@ roadmap/
 ## 確定した方針
 
 - README は英語が正（国際公開向け）。日本語は `README.ja.md` にミラー。
-- `roadmap/` 配下の内部メモは日本語で統一。
+- `roadmap/` 配下の作業記録は日本語で統一。
 - 二本柱: **Semantic Mode Theory**（説明）＋ **Stress Testing Framework**（実証）。
   ループ `Theory → Prediction → Stress Testing → Metrics → Refinement` で接続。
 - 正式な予測体系は `DRAFT.md` §5（P1–P4）。`OUTLINE.md` は常にこれと同期させる。
