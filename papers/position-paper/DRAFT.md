@@ -81,6 +81,10 @@ We predict that prompt conditions designed to mirror human cognitive distortions
 - *Black-box version:* distortion-mirroring prompts increase a behavioral distortion signature. *Candidate metrics:* cognitive distortion score, self-contradiction rate, reduced consistency under paraphrase. *Required observables:* paired distortion vs. neutral prompt sets.
 - *Falsifier:* if distortion-mirroring prompts produce no systematic bias relative to matched neutral prompts at either level, the analogy fails representationally (even if surface behavior differs).
 
+**Supplementary to P1/P2 — a common signature across surface failures.** A stronger refinement of P1 and P2 is that *distinct* surface failures (e.g., hallucination vs. sycophancy vs. jailbreak) may share a *common* mode-level signature of instability. We treat this not as a separate prediction but as a refinement to be tested once P1 and P2 are established: if confirmed, it would support the unifying claim of §1; if the signatures are systematically different across failure types, the unification is weakened (though the individual predictions may still hold).
+
+**Future extension (stronger claim).** A further prediction — that mode-level instability metrics predict downstream failure *earlier or better* than output-level metrics alone — is deliberately deferred. It presupposes that the base predictions above hold and that mode-level measurement is reliable; we record it here and in §10 (Open Problems) as a target for a later stage of the program rather than a first-round test.
+
 We emphasize that confirming a correlation (e.g., P2) is not yet establishing causation; §6 is designed so that graded interventions, not only passive observations, can be brought to bear, moving the program toward causal tests over time.
 
 

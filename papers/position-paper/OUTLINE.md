@@ -53,14 +53,14 @@ Develop the four phases as the theory's core object, each with proposed observab
 
 ## 5. Predictions (Falsifiable)
 
-State concrete, testable predictions the theory commits to *before* observation. *(provisional, to be operationalized)*
+State concrete, testable predictions the theory commits to *before* observation. *(provisional, to be operationalized)* The canonical statements, with white-box / black-box versions, candidate metrics, required observables, and falsifiers, live in [`DRAFT.md`](DRAFT.md) §5; the summary below must stay in sync with it.
 
-- **P1.** Distinct surface failures (hallucination vs. sycophancy vs. jailbreak) share a common mode-level signature of instability.
-- **P2.** There exists a measurable **collapse threshold**: as cognitive load / contradiction increases, semantic behavior degrades non-linearly past a critical point rather than gracefully.
-- **P3.** **Recovery is reorganizational:** after induced collapse, the recovered representation is measurably different from the original, not a return to it.
-- **P4.** Mode-level instability metrics predict downstream failure earlier/better than output-level metrics alone.
+- **P1.** Cognitive stress (contradiction, ambiguity, load) produces a measurable change in the structure of meaning — internally (spectral structure) and/or behaviorally. *Supplementary:* whether distinct surface failures (hallucination vs. sycophancy vs. jailbreak) share a *common* mode-level signature of instability is treated as a refinement of P1/P2.
+- **P2.** Hallucination correlates with mode-level / behavioral instability (over-dominance, mis-binding, destabilization), rather than being independent of representational structure.
+- **P3.** Recovery is reorganizational, not restorative: after induced collapse, the recovered state is measurably different from the original, not a return to it.
+- **P4.** Prompt conditions mirroring human cognitive distortions induce analogous bias (concentration / fixation signatures) in an LLM.
 
-Each prediction is paired with a way it could be *wrong* (the falsifier).
+Each prediction is paired with a way it could be *wrong* (the falsifier). *Future extension (see §10):* whether mode-level instability metrics predict downstream failure **earlier/better** than output-level metrics alone is a stronger claim to be added once the base predictions hold.
 
 ## 6. The Stress Testing Framework (Empirical Pillar)
 
@@ -80,7 +80,7 @@ Lay out the comparative program: the same lifecycle (formation/distortion/collap
 
 ## 10. Limitations and Open Problems
 
-Name the hard parts honestly: the definition is provisional; "mode" may be measurement-dependent; correlation between mode signatures and failures is not yet causation; cross-substrate (brain↔LLM) claims are analogical until grounded. List the open problems that the program must close to mature.
+Name the hard parts honestly: the definition is provisional; "mode" may be measurement-dependent; correlation between mode signatures and failures is not yet causation; cross-substrate (brain↔LLM) claims are analogical until grounded. List the open problems that the program must close to mature — including the **stronger, deferred claim** that mode-level metrics predict downstream failure *earlier/better* than output-level metrics (a target for a later stage, contingent on the base predictions of §5 holding).
 
 ## 11. Research Perspective (Why This Synthesis)
 
