@@ -12,7 +12,14 @@ benchmark. Expect items to be added, revised, or dropped.
 ## Files
 
 - `minimal-stress-set.v0.jsonl` — first minimal set, one case per line, a few
-  items per stress condition.
+  items per stress condition (cross-cuts all six conditions).
+- `contradiction-ladder.v0.1.jsonl` — a graded contradiction series for
+  measuring the **collapse threshold** (§6). Six rungs
+  (`neutral → low → medium → high → impossible → recovery`) that hold the same
+  logical form (an ordering over X, Y, Z) constant and escalate only the
+  contradiction/constraint load. Rung 0 is an isomorphic non-contradictory
+  control; each rung's `matched_control` points to the rung below it. Adds the
+  field `intensity_level` (integer 0–5) for ordering along the ladder.
 
 ## Schema (one JSON object per line)
 
@@ -20,7 +27,8 @@ benchmark. Expect items to be added, revised, or dropped.
 |---|---|---|
 | `id` | yes | Unique case id (`<stressor>-<label>`). |
 | `stressor` | yes | One of: `baseline`, `contradiction`, `ambiguity`, `long_context`, `cognitive_distortion`, `recovery`. |
-| `intensity` | yes | `none` / `low` / `medium` / `high` — graded stress level. |
+| `intensity` | yes | Stress level label (e.g. `none`/`low`/`medium`/`high`, plus `neutral`/`impossible`/`recovery` in the ladder set). |
+| `intensity_level` | no | Integer rung index for graded series (used by `contradiction-ladder.v0.1.jsonl`, 0–5). |
 | `target_prediction` | yes | Prediction(s) the case bears on: `P1`–`P4`, or `control`. |
 | `prompt` | yes | The user message sent to the model. |
 | `paraphrases` | no | Meaning-preserving variants, for `paraphrase_consistency`. |
