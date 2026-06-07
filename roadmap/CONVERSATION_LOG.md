@@ -63,8 +63,21 @@ _作成: 2026-06-07_
 12. **結果収集インフラ** — `run_stress_set.py`（忠実ランナー）、結果スキーマ、
     合成サンプル、誠実性ルール、disclaimer を追加。PR #6（オープン）。
 
-13. **本日終了・メモ化** — `roadmap/NEXT_STEPS.md` 作成。会話履歴は
-    セッションをまたいで保持されないため、日本語の作業記録を整備。
+13. **メモ化** — `roadmap/NEXT_STEPS.md` 作成。会話履歴は
+    セッションをまたいで保持されないため、日本語の作業記録を整備
+    （NEXT_STEPS / CONVERSATION_LOG / DECISIONS）。
+
+14. **PR #6 の査読対応** — 実験基盤PRとして厳しめにレビューを受け、5点を修正:
+    (1) `--include-paraphrases` 追加（paraphrase consistency 計測可能化）、
+    (2) APIキーのリダクション（特に Google の key-in-URL 対策）、
+    (3) schema を v0.2 にして `conversation` を required 化、
+    (4) `prompt_set_sha256`＋`case_metadata` で再現性強化、
+    (5) roadmap を public project log 前提の表現に統一。
+    誤コミットした `__pycache__` を削除し `.gitignore` を追加。
+    最後に「内部メモ」→「作業記録」へ文言統一して **PR #6 をマージ**。
+
+15. **全PRマージ完了** — PR #1〜#6 すべて `main` に反映。研究プログラムとして
+    一通り（理論・指標・プロトコル・プロンプト・実行基盤・作業記録）が揃った。
 
 ## 進め方のパターン（このプロジェクトの流儀）
 
