@@ -4,7 +4,7 @@
 
 **Status:** Draft outline (skeleton). Each section gives a 2–3 sentence summary of what it will argue. Predictions and definitions marked *(provisional)* are deliberate starting points, to be sharpened, not settled claims.
 
-**Audience:** AI safety / interpretability researchers (Anthropic, DeepMind, MSR), and brain/cognitive scientists working on representation and reorganization.
+**Audience:** the AI safety / interpretability research community, and brain/cognitive scientists working on representation and reorganization.
 
 ---
 

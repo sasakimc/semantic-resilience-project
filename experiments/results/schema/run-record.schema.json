@@ -1,13 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "results-record/0.1",
+  "$id": "results-record/0.2",
   "title": "Stress-test run record",
-  "description": "One record per (case, repeat). Captures full provenance and the raw model response. Metrics are computed separately, offline; this file stores observations, not conclusions.",
+  "description": "One record per (case, variant, repeat). Captures full provenance and the raw model response. Metrics are computed separately, offline; this file stores observations, not conclusions.",
   "type": "object",
   "required": [
     "schema_version", "run_id", "timestamp_utc", "provider", "model",
-    "temperature", "max_tokens", "set_file", "case_id", "repeat_index",
-    "response_text", "synthetic_example"
+    "model_version_reported", "temperature", "max_tokens", "set_file",
+    "prompt_set_sha256", "case_id", "case_metadata", "variant", "repeat_index",
+    "conversation", "response_text", "dry_run", "error", "synthetic_example"
   ],
   "properties": {
     "schema_version": {"type": "string"},
@@ -17,21 +18,24 @@
     "code_version": {"type": "string", "description": "Git short SHA of the runner/repo at run time."},
     "provider": {"type": "string", "enum": ["anthropic", "openai", "google"]},
     "model": {"type": "string", "description": "Model id as requested."},
-    "model_version_reported": {"type": ["string", "null"], "description": "Model id as reported by the API response, if any."},
+    "model_version_reported": {"type": ["string", "null"], "description": "Model id as reported by the API response (null on error/dry-run)."},
     "temperature": {"type": "number"},
     "max_tokens": {"type": "integer"},
     "system_prompt": {"type": "string"},
     "set_file": {"type": "string"},
+    "prompt_set_sha256": {"type": "string", "description": "SHA-256 of the exact prompt-set file used, so results can be tied to a prompt version."},
     "case_id": {"type": "string"},
+    "case_metadata": {"type": "object", "description": "The full original case object from the prompt set, preserved verbatim for reproducibility."},
     "stressor": {"type": ["string", "null"]},
     "intensity": {"type": ["string", "null"]},
     "intensity_level": {"type": ["integer", "null"]},
     "target_prediction": {"type": ["string", "null"]},
+    "variant": {"type": "string", "description": "Which form of the prompt was sent: 'original' or 'paraphrase:<i>'."},
     "repeat_index": {"type": "integer"},
     "is_recovery": {"type": "boolean"},
     "conversation": {
       "type": "array",
-      "description": "The exact turns exchanged, in order. For recovery cases the assistant turn between the prior prompt and the recovery prompt is the model's own real response.",
+      "description": "The exact turns exchanged, in order. For recovery cases the assistant turn between the prior prompt and the recovery prompt is the model's own real response. Empty only on a pre-call error.",
       "items": {
         "type": "object",
         "required": ["role", "content"],
@@ -44,7 +48,7 @@
     "response_text": {"type": ["string", "null"], "description": "Final assistant response (null on error or dry-run)."},
     "prior_response_text": {"type": ["string", "null"], "description": "For recovery cases: the model's response to the collapse-inducing prior turn."},
     "dry_run": {"type": "boolean"},
-    "error": {"type": ["string", "null"]},
+    "error": {"type": ["string", "null"], "description": "Error string with any API key values redacted."},
     "synthetic_example": {"type": "boolean", "description": "MUST be false for real runs. true only for schema illustration files."}
   }
 }

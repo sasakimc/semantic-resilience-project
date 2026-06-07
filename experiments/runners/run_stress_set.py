@@ -2,10 +2,10 @@
 """Run a stress-test prompt set (JSONL) against an LLM and record raw responses.
 
 This runner makes NO claims and fabricates NO data. It sends the prompts in a
-set to a model via its API and writes one JSON record per (case, repeat),
-capturing full provenance (model, timestamp, settings, exact conversation,
-raw response). Metric computation is intentionally left to a separate,
-offline step.
+set to a model via its API and writes one JSON record per (case, variant,
+repeat), capturing full provenance (model, timestamp, settings, exact
+conversation, raw response, and the originating prompt-set hash + case).
+Metric computation is intentionally left to a separate, offline step.
 
 Supported providers (API key read from the environment):
   - anthropic  (ANTHROPIC_API_KEY)
@@ -17,10 +17,14 @@ two-turn conversation: the model's OWN answer to the prior (collapse-inducing)
 turn is captured first, then the recovery prompt is sent as a follow-up. The
 induced assistant turn is never fabricated.
 
+Paraphrases: by default only each case's primary `prompt` is sent. Pass
+`--include-paraphrases` to additionally send each entry of a case's
+`paraphrases` array as its own variant (needed for paraphrase-consistency).
+
 Usage:
   python run_stress_set.py --set ../prompts/contradiction-ladder.v0.1.jsonl \
       --provider anthropic --model claude-opus-4-8 --repeats 5 \
-      --out ../results/runs/$(date +%Y%m%d)-anthropic.jsonl
+      --out ../results/runs/20260607-anthropic-ladder.jsonl
 
   # Inspect exactly what would be sent, with no network calls or API key:
   python run_stress_set.py --set ../prompts/minimal-stress-set.v0.jsonl \
@@ -28,6 +32,7 @@ Usage:
 """
 import argparse
 import datetime as dt
+import hashlib
 import json
 import os
 import subprocess
@@ -36,7 +41,14 @@ import urllib.error
 import urllib.request
 import uuid
 
-SCHEMA_VERSION = "results-record/0.1"
+SCHEMA_VERSION = "results-record/0.2"
+
+# API key environment variables, used both to authenticate and to redact.
+KEY_ENV = {
+    "anthropic": "ANTHROPIC_API_KEY",
+    "openai": "OPENAI_API_KEY",
+    "google": "GOOGLE_API_KEY",
+}
 
 
 def utc_now() -> str:
@@ -50,6 +62,33 @@ def git_sha() -> str:
         ).decode().strip()
     except Exception:
         return "unknown"
+
+
+def sha256_file(path: str) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def make_redactor():
+    """Return a function that masks any present API key values in a string."""
+    secrets = [v for v in (os.environ.get(name) for name in KEY_ENV.values()) if v]
+
+    def redact(text):
+        if text is None:
+            return None
+        s = str(text)
+        for secret in secrets:
+            if secret:
+                s = s.replace(secret, "***REDACTED***")
+        return s
+
+    return redact
+
+
+REDACT = make_redactor()
 
 
 def _http_post(url: str, headers: dict, payload: dict) -> dict:
@@ -101,6 +140,9 @@ def chat_openai(model, system, turns, temperature, max_tokens):
 
 
 def chat_google(model, system, turns, temperature, max_tokens):
+    # NOTE: Google's REST API takes the key as a query parameter. We never write
+    # the URL into records, and all error text is passed through REDACT, so the
+    # key cannot leak into the results file.
     key = os.environ["GOOGLE_API_KEY"]
     contents = [
         {"role": "user" if t["role"] == "user" else "model", "parts": [{"text": t["content"]}]}
@@ -121,47 +163,37 @@ def chat_google(model, system, turns, temperature, max_tokens):
 ADAPTERS = {"anthropic": chat_anthropic, "openai": chat_openai, "google": chat_google}
 
 
-def build_conversation(case: dict):
-    """Return the list of user turns to play, in order.
+def expand_variants(case: dict, include_paraphrases: bool):
+    """Yield (variant_label, final_prompt) pairs for a case."""
+    yield "original", case["prompt"]
+    if include_paraphrases:
+        for i, p in enumerate(case.get("paraphrases", []) or []):
+            yield f"paraphrase:{i}", p
 
-    For ordinary cases: [prompt].
-    For recovery cases (with prior_turn): [prior_turn.user, prompt]; the
-    assistant turn between them is filled by the model's real response at run
-    time (see run_case).
+
+def play_conversation(case, final_prompt, adapter, model, system, temperature, max_tokens, dry_run):
+    """Run the (possibly two-turn) conversation, returning (convo, responses).
+
+    `final_prompt` replaces the case's primary prompt (used for paraphrases).
+    Recovery cases prepend the prior_turn user message; the assistant turn in
+    between is the model's own real response (never fabricated).
     """
     prior = case.get("prior_turn")
-    if prior and prior.get("user"):
-        return [prior["user"], case["prompt"]]
-    return [case["prompt"]]
+    user_turns = ([prior["user"]] if prior and prior.get("user") else []) + [final_prompt]
 
-
-def run_case(case, adapter, model, system, temperature, max_tokens, dry_run):
-    user_turns = build_conversation(case)
-    convo = []  # full {role, content} list actually exchanged
+    convo = []
     responses = []
+    reported = None
     for user_text in user_turns:
         convo.append({"role": "user", "content": user_text})
         if dry_run:
             convo.append({"role": "assistant", "content": "<dry-run: not sent>"})
             responses.append(None)
             continue
-        text, reported = run_case._adapter_call(adapter, model, system, convo, temperature, max_tokens)
+        text, reported = adapter(model, system, convo, temperature, max_tokens)
         convo.append({"role": "assistant", "content": text})
         responses.append(text)
-        run_case._last_reported = reported
-    return convo, responses
-
-
-run_case._last_reported = None
-
-
-def _adapter_call(adapter, model, system, convo, temperature, max_tokens):
-    # Only the user/assistant turns so far are sent; the trailing user turn is
-    # the one we want a response to.
-    return adapter(model, system, convo, temperature, max_tokens)
-
-
-run_case._adapter_call = _adapter_call
+    return convo, responses, reported
 
 
 def main():
@@ -172,7 +204,9 @@ def main():
     ap.add_argument("--repeats", type=int, default=1)
     ap.add_argument("--temperature", type=float, default=0.0)
     ap.add_argument("--max-tokens", type=int, default=512)
-    ap.add_argument("--system", default="", help="Optional system prompt (record it!)")
+    ap.add_argument("--system", default="", help="Optional system prompt (recorded verbatim)")
+    ap.add_argument("--include-paraphrases", action="store_true",
+                    help="Also send each case's paraphrases as separate variants")
     ap.add_argument("--out", default="", help="Output .jsonl path (default: stdout)")
     ap.add_argument("--dry-run", action="store_true", help="Print what would be sent; no API calls")
     args = ap.parse_args()
@@ -181,6 +215,7 @@ def main():
     run_id = uuid.uuid4().hex[:12]
     started = utc_now()
     code_version = git_sha()
+    set_sha = sha256_file(args.set)
 
     with open(args.set, encoding="utf-8") as f:
         cases = [json.loads(line) for line in f if line.strip()]
@@ -189,46 +224,53 @@ def main():
     n = 0
     try:
         for case in cases:
-            for rep in range(args.repeats):
-                rec = {
-                    "schema_version": SCHEMA_VERSION,
-                    "run_id": run_id,
-                    "timestamp_utc": utc_now(),
-                    "run_started_utc": started,
-                    "code_version": code_version,
-                    "provider": args.provider,
-                    "model": args.model,
-                    "temperature": args.temperature,
-                    "max_tokens": args.max_tokens,
-                    "system_prompt": args.system,
-                    "set_file": os.path.basename(args.set),
-                    "case_id": case.get("id"),
-                    "stressor": case.get("stressor"),
-                    "intensity": case.get("intensity"),
-                    "intensity_level": case.get("intensity_level"),
-                    "target_prediction": case.get("target_prediction"),
-                    "repeat_index": rep,
-                    "is_recovery": bool(case.get("prior_turn")),
-                    "dry_run": args.dry_run,
-                    "synthetic_example": False,
-                }
-                try:
-                    convo, responses = run_case(
-                        case, adapter, args.model, args.system,
-                        args.temperature, args.max_tokens, args.dry_run,
-                    )
-                    rec["conversation"] = convo
-                    rec["response_text"] = responses[-1]
-                    if rec["is_recovery"]:
-                        rec["prior_response_text"] = responses[0]
-                    rec["model_version_reported"] = run_case._last_reported
-                    rec["error"] = None
-                except (urllib.error.URLError, KeyError, OSError) as e:
-                    rec["error"] = f"{type(e).__name__}: {e}"
-                    rec["response_text"] = None
-                out_fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
-                out_fh.flush()
-                n += 1
+            for variant_label, final_prompt in expand_variants(case, args.include_paraphrases):
+                for rep in range(args.repeats):
+                    rec = {
+                        "schema_version": SCHEMA_VERSION,
+                        "run_id": run_id,
+                        "timestamp_utc": utc_now(),
+                        "run_started_utc": started,
+                        "code_version": code_version,
+                        "provider": args.provider,
+                        "model": args.model,
+                        "model_version_reported": None,
+                        "temperature": args.temperature,
+                        "max_tokens": args.max_tokens,
+                        "system_prompt": args.system,
+                        "set_file": os.path.basename(args.set),
+                        "prompt_set_sha256": set_sha,
+                        "case_id": case.get("id"),
+                        "case_metadata": case,
+                        "stressor": case.get("stressor"),
+                        "intensity": case.get("intensity"),
+                        "intensity_level": case.get("intensity_level"),
+                        "target_prediction": case.get("target_prediction"),
+                        "variant": variant_label,
+                        "repeat_index": rep,
+                        "is_recovery": bool(case.get("prior_turn")),
+                        "dry_run": args.dry_run,
+                        "conversation": [],
+                        "response_text": None,
+                        "error": None,
+                        "synthetic_example": False,
+                    }
+                    try:
+                        convo, responses, reported = play_conversation(
+                            case, final_prompt, adapter, args.model, args.system,
+                            args.temperature, args.max_tokens, args.dry_run,
+                        )
+                        rec["conversation"] = convo
+                        rec["response_text"] = responses[-1]
+                        if rec["is_recovery"]:
+                            rec["prior_response_text"] = responses[0]
+                        rec["model_version_reported"] = reported
+                    except (urllib.error.URLError, KeyError, OSError, ValueError) as e:
+                        # REDACT guarantees no API key leaks into the record.
+                        rec["error"] = REDACT(f"{type(e).__name__}: {e}")
+                    out_fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                    out_fh.flush()
+                    n += 1
     finally:
         if out_fh is not sys.stdout:
             out_fh.close()
