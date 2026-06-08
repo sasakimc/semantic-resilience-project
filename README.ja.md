@@ -210,6 +210,10 @@ semantic-mode-theory/
 - LLM 評価
 - 脳科学・認知科学からのコメント
 
+## License & Citation
+
+デュアルライセンス: **コードは [MIT](LICENSE)**、**文書・論文・プロンプトセットは [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)**。詳細は [`LICENSING.md`](LICENSING.md)。本研究を利用・発展させる場合は、[`CITATION.cff`](CITATION.cff) に従って引用してください。
+
 ---
 
 本研究プログラムは、脳科学、認知科学、計算科学、AI安全性研究を統合し、「意味の形成・歪み・崩壊・回復」の一般理論を目指すものである。これは完成された理論ではなく、今後の理論化、実験、検証、共同研究に向けた出発点である。
