@@ -29,6 +29,7 @@ benchmark. Expect items to be added, revised, or dropped.
 | `stressor` | yes | One of: `baseline`, `contradiction`, `ambiguity`, `long_context`, `cognitive_distortion`, `recovery`. |
 | `intensity` | yes | Stress level label (e.g. `none`/`low`/`medium`/`high`, plus `neutral`/`impossible`/`recovery` in the ladder set). |
 | `intensity_level` | no | Integer rung index for graded series (used by `contradiction-ladder.v0.1.jsonl`, 0–5). |
+| `answer_format` | no | Set to `binary` for forced yes/no items. Metrics use it to gate the yes/no flip-rate (only applied to forced-choice cases). |
 | `target_prediction` | yes | Prediction(s) the case bears on: `P1`–`P4`, or `control`. |
 | `prompt` | yes | The user message sent to the model. |
 | `paraphrases` | no | Meaning-preserving variants, for `paraphrase_consistency`. |

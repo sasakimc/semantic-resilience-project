@@ -9,9 +9,14 @@ require an embedding model or an LLM judge are emitted as null with an explicit
 
 Each metric carries a method label:
   - structural          : parsed from response structure (e.g. leading yes/no)
-  - lexical             : text-similarity proxy (difflib), clearly approximate
+  - lexical             : lexical STABILITY proxy (difflib surface-form overlap),
+                          NOT semantic similarity — a fluent paraphrase scores low
   - requires_embedding  : not computed here; needs an embedding source
   - requires_judge      : not computed here; needs an LLM/NLI judge or labels
+
+Important: the `lexical` metrics measure surface-form stability, not meaning.
+They are coarse first-pass proxies; report them as "lexical stability", not
+"semantic consistency".
 
 Output: a tidy table keyed by (provider, model, set_file, case_id),
 plus an aggregate keyed by (provider, model, stressor, intensity_level).
@@ -34,13 +39,14 @@ from difflib import SequenceMatcher
 SUPPORTED_INPUT_SCHEMA = "results-record/0.2"
 
 # Metrics that this offline script cannot compute without extra machinery.
-# Listed so the output is explicit about what is missing and why.
+# Listed (in priority order for later implementation) so the output is explicit
+# about what is missing and why.
 DEFERRED_METRICS = {
-    "semantic_drift": "requires_embedding",
-    "residual_distance_to_baseline": "requires_embedding",
-    "hallucination_persistence": "requires_judge",
-    "cognitive_distortion_score": "requires_judge",
-    "long_context_degradation": "requires_judge",  # needs graded correctness labels
+    "residual_distance_to_baseline": "requires_embedding",  # priority 1
+    "semantic_drift": "requires_embedding",                 # priority 2
+    "hallucination_persistence": "requires_judge",          # priority 3
+    "cognitive_distortion_score": "requires_judge",         # priority 4
+    "long_context_degradation": "requires_judge",           # needs graded labels
 }
 
 _YESNO_RE = re.compile(r"\b(yes|no)\b", re.IGNORECASE)
@@ -98,9 +104,21 @@ def mean_pairwise_sim(texts):
     return round(statistics.mean(sims), 4) if sims else None
 
 
-def case_metrics(records):
-    """Compute per-case metrics from all (variant, repeat) records of one case."""
+def mean_cross_distance(a_texts, b_texts):
+    """Mean (1 - lexical_sim) over the cross product of two response lists."""
+    pairs = [lexical_sim(a, b) for a in a_texts for b in b_texts]
+    pairs = [p for p in pairs if p is not None]
+    return round(1 - statistics.mean(pairs), 4) if pairs else None
+
+
+def case_metrics(records, baseline_lookup):
+    """Compute per-case metrics from all (variant, repeat) records of one case.
+
+    baseline_lookup maps (provider, model, set_file, case_id) -> [original-variant
+    responses], used for recovery's three-point comparison.
+    """
     ref = records[0]
+    meta = ref.get("case_metadata") or {}
     responses = [r.get("response_text") for r in records]
     valid = [t for t in responses if t]
     errors = sum(1 for r in records if r.get("error"))
@@ -108,41 +126,53 @@ def case_metrics(records):
     variants = {r.get("variant", "original") for r in records}
     repeats = max((r.get("repeat_index", 0) for r in records), default=0) + 1
 
-    # --- structural: yes/no answers and their instability ---
-    yesno = [leading_yesno(t) for t in valid]
-    yesno = [y for y in yesno if y]
+    # --- structural: yes/no instability, ONLY for forced-binary items ---
+    # Free-form / ambiguous items are excluded: a leading yes/no there is
+    # unreliable (per review). A case is forced-binary if its metadata says so.
+    forced_binary = meta.get("answer_format") == "binary"
+    yesno = [y for y in (leading_yesno(t) for t in valid) if y]
     distinct_yesno = sorted(set(yesno))
-    # flip rate: fraction of the minority answer (0 = perfectly consistent)
     yesno_flip_rate = None
-    if len(yesno) >= 2:
+    if forced_binary and len(yesno) >= 2:
         majority = max(set(yesno), key=yesno.count)
         yesno_flip_rate = round(1 - yesno.count(majority) / len(yesno), 4)
 
-    # --- lexical: consistency across all responses, and paraphrase sensitivity ---
+    # --- lexical stability proxies (surface form, NOT meaning) ---
     consistency_lexical = mean_pairwise_sim(valid)
     orig = [r.get("response_text") for r in records if r.get("variant", "original") == "original"]
     para = [r.get("response_text") for r in records if str(r.get("variant", "")).startswith("paraphrase")]
     prompt_perturbation_sensitivity = None
     if orig and para:
-        cross = [lexical_sim(o, p) for o in orig for p in para if lexical_sim(o, p) is not None]
-        if cross:
-            prompt_perturbation_sensitivity = round(1 - statistics.mean(cross), 4)
+        prompt_perturbation_sensitivity = mean_cross_distance(
+            [t for t in orig if t], [t for t in para if t]
+        )
 
-    # --- recovery (structural + lexical), only for recovery cases ---
+    # --- recovery: three-point comparison baseline -> collapsed(prior) -> recovered ---
     is_recovery = bool(ref.get("is_recovery"))
-    recovery_change_lexical = None
+    recovery_change_vs_prior = None      # how far recovered moved FROM the collapsed answer
+    recovery_distance_vs_baseline = None # how far recovered is FROM the clean baseline
     recovery_ack_rate = None
     if is_recovery:
         changes, acks = [], []
+        recovered_texts = []
         for r in records:
             prior, recovered = r.get("prior_response_text"), r.get("response_text")
             s = lexical_sim(prior, recovered)
             if s is not None:
-                changes.append(1 - s)  # how much the answer reorganized vs. prior
+                changes.append(1 - s)
             if recovered is not None:
+                recovered_texts.append(recovered)
                 acks.append(1 if _INCONSISTENCY_RE.search(recovered) else 0)
-        recovery_change_lexical = round(statistics.mean(changes), 4) if changes else None
+        recovery_change_vs_prior = round(statistics.mean(changes), 4) if changes else None
         recovery_ack_rate = round(statistics.mean(acks), 4) if acks else None
+        # baseline = the matched_control case (e.g. the neutral rung)
+        baseline_id = meta.get("matched_control")
+        if baseline_id and recovered_texts:
+            base = baseline_lookup.get(
+                (ref.get("provider"), ref.get("model"), ref.get("set_file"), baseline_id), []
+            )
+            if base:
+                recovery_distance_vs_baseline = mean_cross_distance(recovered_texts, base)
 
     row = {
         "provider": ref.get("provider"),
@@ -155,21 +185,22 @@ def case_metrics(records):
         "intensity": ref.get("intensity"),
         "intensity_level": ref.get("intensity_level"),
         "target_prediction": ref.get("target_prediction"),
+        "forced_binary": forced_binary,
         "n_variants": len(variants),
         "n_repeats": repeats,
         "n_records": len(records),
         "n_valid_responses": len(valid),
         "n_errors": errors,
-        # structural
+        # structural (forced-binary only)
         "yesno_answers": ",".join(distinct_yesno) if distinct_yesno else "",
         "yesno_flip_rate__structural": yesno_flip_rate,
-        # lexical proxies
-        "consistency_lexical__lexical": consistency_lexical,
+        # lexical STABILITY proxies (surface form, not meaning)
+        "consistency_lexical_stability__lexical": consistency_lexical,
         "prompt_perturbation_sensitivity__lexical": prompt_perturbation_sensitivity,
-        "recovery_change_lexical__lexical": recovery_change_lexical,
+        "recovery_change_vs_prior__lexical": recovery_change_vs_prior,
+        "recovery_distance_vs_baseline__lexical": recovery_distance_vs_baseline,
         "recovery_inconsistency_ack_rate__lexical": recovery_ack_rate,
     }
-    # explicit nulls for deferred metrics, tagged with why
     for name, method in DEFERRED_METRICS.items():
         row[f"{name}__{method}"] = None
     return row
@@ -181,18 +212,22 @@ def aggregate(rows):
         groups[(r["provider"], r["model"], r["stressor"], r["intensity_level"])].append(r)
 
     def mean_of(rs, key):
-        vals = [r[key] for r in rs if isinstance(r.get(key), (int, float))]
+        vals = [r[key] for r in rs if isinstance(r.get(key), (int, float)) and not isinstance(r.get(key), bool)]
         return round(statistics.mean(vals), 4) if vals else None
 
     out = []
-    for (prov, model, stressor, level), rs in sorted(groups.items(), key=lambda x: (str(x[0][0]), str(x[0][1]), str(x[0][2]), (x[0][3] is None, x[0][3]))):
+    for (prov, model, stressor, level), rs in sorted(
+        groups.items(),
+        key=lambda x: (str(x[0][0]), str(x[0][1]), str(x[0][2]), (x[0][3] is None, x[0][3])),
+    ):
         out.append({
             "provider": prov, "model": model, "stressor": stressor, "intensity_level": level,
             "n_cases": len(rs),
             "mean_yesno_flip_rate": mean_of(rs, "yesno_flip_rate__structural"),
-            "mean_consistency_lexical": mean_of(rs, "consistency_lexical__lexical"),
+            "mean_consistency_lexical_stability": mean_of(rs, "consistency_lexical_stability__lexical"),
             "mean_prompt_perturbation_sensitivity": mean_of(rs, "prompt_perturbation_sensitivity__lexical"),
-            "mean_recovery_change_lexical": mean_of(rs, "recovery_change_lexical__lexical"),
+            "mean_recovery_change_vs_prior": mean_of(rs, "recovery_change_vs_prior__lexical"),
+            "mean_recovery_distance_vs_baseline": mean_of(rs, "recovery_distance_vs_baseline__lexical"),
         })
     return out
 
@@ -235,7 +270,19 @@ def main():
     for r in records:
         by_case[(r.get("provider"), r.get("model"), r.get("set_file"), r.get("case_id"))].append(r)
 
-    per_case = [case_metrics(rs) for _, rs in sorted(by_case.items(), key=lambda x: tuple(str(v) for v in x[0]))]
+    # Baseline lookup for recovery's three-point comparison: original-variant
+    # responses of each case, addressable by its id.
+    baseline_lookup = {}
+    for key, rs in by_case.items():
+        baseline_lookup[key] = [
+            r.get("response_text") for r in rs
+            if r.get("variant", "original") == "original" and r.get("response_text")
+        ]
+
+    per_case = [
+        case_metrics(rs, baseline_lookup)
+        for _, rs in sorted(by_case.items(), key=lambda x: tuple(str(v) for v in x[0]))
+    ]
     agg = aggregate(per_case)
 
     if args.out_prefix:
