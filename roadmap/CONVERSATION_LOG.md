@@ -79,6 +79,22 @@ _作成: 2026-06-07_
 15. **全PRマージ完了** — PR #1〜#6 すべて `main` に反映。研究プログラムとして
     一通り（理論・指標・プロトコル・プロンプト・実行基盤・作業記録）が揃った。
 
+16. **Related Work 追補（PR #8）** — 文献地図を probing → BERTology →
+    BART/T5 → mechanistic interpretability の系譜に拡充。semantic mode を
+    「発見した新部品」ではなく **integrating operational construct** と再定義。
+    RDF-to-Text の引用（Faille, Gatt & Gardent, 2024）も確定。
+
+17. **公開体裁** — `LICENSE`(MIT) / `LICENSING.md` / `CITATION.cff` / README
+    の License 節を整備（コードMIT＋文書CC BY 4.0）。iPhone での PR 作成が
+    不調だったため、git の fast-forward で `main` に反映。
+
+18. **オフライン指標スクリプト（2026-06-08）** —
+    `experiments/metrics/compute_metrics.py` を実装。捏造ゼロ・method タグ付き。
+    ChatGPT レビューを受けて修正反映: lexical stability 明示、
+    yesno_flip を forced-binary 限定、recovery 三点比較＋baseline-missing フラグ、
+    embedding 指標の優先順位明記。**運用を「push 前に ChatGPT レビュー」に変更。**
+    `origin/main` = `b471e90` で本日終了。
+
 ## 進め方のパターン（このプロジェクトの流儀）
 
 - 作業はブランチ `claude/charming-cerf-3qhsN` で行い、PR を作ってユーザーが

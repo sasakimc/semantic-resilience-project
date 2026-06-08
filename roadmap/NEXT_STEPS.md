@@ -47,14 +47,18 @@ roadmap/
   DECISIONS.md                            重要な判断の記録
 ```
 
-## PR の状況
+## PR の状況 / 直近の作業
 
-- **PR #1〜#6: すべて `main` にマージ済み。**
-  - PR #6 は査読の指摘5点（paraphrases 実行 / APIキーのリダクション /
-    schema の `conversation` 必須化 / `prompt_set_sha256`＋`case_metadata` /
-    roadmap の public project log 化）を反映してからマージした。
+- **PR #1〜#8: すべて `main` にマージ済み。** その後の小さな変更（LICENSE/
+  CITATION、オフライン指標スクリプト、レビュー反映）は、作業ブランチに commit →
+  `main` に **fast-forward して push** する形で反映済み。
+- `origin/main` 先端 = `b471e90`（2026-06-08 終了時点）。
 - 作業ブランチ `claude/charming-cerf-3qhsN` と `main` は内容一致。
-- 次に作業する時もこのブランチで作業し、PR を作ってレビュー → マージ、の流れ。
+- **運用変更（重要）**: これ以降は **push の前に ChatGPT レビューを通す**。
+  手順 = ローカル commit（push しない）→ `git diff origin/main..HEAD` を
+  ファイルで渡して ChatGPT レビュー → OK なら push → main を FF。
+- GitHub の PR 作成 UI は iPhone だと「nothing to compare」になりやすい
+  （スラッシュ入りブランチ名）。確実なのは git での FF マージ。
 
 ## 確定した方針
 
@@ -76,29 +80,31 @@ roadmap/
   **匿名化したコードリポジトリ/ZIP** を投稿に使う。
 - arXiv へは「純粋な提案」ではなく **初期実験を含む research article** として出す。
 
+## ✅ 済んだこと（2026-06-08）
+
+- 公開体裁: `LICENSE`(MIT) / `LICENSING.md` / `CITATION.cff` / README の License 節。
+- **オフライン指標スクリプト `experiments/metrics/compute_metrics.py` 実装＋ChatGPTレビュー反映済み。**
+  - black-box 指標を method タグ付きで算出（structural / lexical / requires_embedding / requires_judge）。捏造ゼロ。
+  - lexical 指標は「**lexical stability proxy**（表面形式・意味ではない）」と明示。
+  - `yesno_flip_rate` は **forced-binary 限定**（`answer_format:"binary"`）の collapse *proxy*。
+  - recovery は三点比較: `recovery_lexical_change_vs_prior` ＋ `recovery_lexical_distance_vs_baseline`（matched_control 参照）＋ `recovery_baseline_missing` フラグ。
+
 ## 次回はここから（おすすめ順）
 
-（PR #6 はマージ済み。結果インフラは `main` にある。）
-
-1. **オフライン指標スクリプトを作る**（実データ前でも着手可）:
-   `experiments/metrics/compute_metrics.py`。`results/runs/*.jsonl` を読み、
-   §5 の black-box 指標を計算する:
-   - self_contradiction_rate, paraphrase_consistency,
-     prompt_perturbation_sensitivity（paraphrase/repeat のグルーピングが必要）,
-     recovery_success_rate, residual_distance_to_baseline, semantic_drift。
-   - 注意: semantic_drift / residual_distance は埋め込み元が必要。
-     埋め込みモデルとアクセス方法を決めるか、まずは judge ベース/語彙的な
-     proxy から始めて「proxy である」と明記する。
-   - 出力は (model, case, intensity_level) をキーにした整然テーブル（CSV/JSON）。
-2. **本物の結果を入れる**（どちらか選ぶ）:
+1. **本物の結果を入れる**（どちらか選ぶ）— ここが次の本丸:
    - (a) 手元で APIキー付きランナーを実行し `results/runs/*.jsonl` をコミット、または
    - (b) GitHub Actions ワークフロー＋ secrets
      （`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`）で CI 実行。
-   - まずは **contradiction ladder** から。崩壊閾値が一番きれいに見える
-     （段 0→4 の非線形劣化、段5で P3 の再編成）。
+   - まずは **contradiction ladder** から（崩壊閾値が一番きれいに見える: 段 0→4 の
+     非線形劣化、段5で P3 の再編成）。実行コマンド例は
+     `experiments/runners/README.md`。
+   - 取得後: `python experiments/metrics/compute_metrics.py --runs experiments/results/runs/*.jsonl --out-prefix ...`
+2. **embedding 指標の実装**（本命）: 優先順位は
+   `residual_distance_to_baseline → semantic_drift`。まず**埋め込み元を決める**
+   （API か ローカルモデルか）。これが P3「回復＝再編成」を連続量で測る本丸。
 3. **最初の結果まとめ:** 短い `papers/position-paper/RESULTS.md`（または DRAFT に
-   §Results を追加）。ラダーの結果を provenance 完備で報告する。
-   これが Position Paper を arXiv 向けの「研究論文」に格上げする。
+   §Results を追加）。ラダーの結果を provenance 完備で報告 → arXiv 向け
+   research article に格上げ。
 
 ## 小さめの宿題（あると良い）
 
@@ -107,13 +113,24 @@ roadmap/
   脳科学 → LLM）。
 - contradiction ラダーのワークフローが通ったら、他のストレッサー
   （ambiguity, value-conflict）も段階ラダー化する。
-- 公開研究プロジェクトとして LICENSE と CITATION.cff を追加。
-- Position Paper の残り章（§0,1,2,7,8,9,10,12）を埋める。
+- ~~公開研究プロジェクトとして LICENSE と CITATION.cff を追加。~~ ✅ 済
+- Position Paper の残り章（§0,1,7,8,9,10,12）を埋める（§2 Related Work は済）。
+- contradiction ラダーのワークフローが通ったら、他のストレッサー
+  （ambiguity, value-conflict）も段階ラダー化する。
+- `§11 Research Perspective`: プレースホルダを一人称 epistemic-provenance 文に置換。
 - GitHub の About 文・topics（ai-safety, interpretability,
-  cognitive-science）。これは GitHub 設定の手動操作。
+  cognitive-science）。これは GitHub 設定の手動操作（あなた側）。
 
 ## 次回まず答える1問
 
-本物の結果をどう作るか — ローカル実行（3a）か CI＋secrets（3b）か。
-この選択で、次のコーディングが「ワークフロー作成」か「指標スクリプトのみ」かが
-決まる。
+本物の結果をどう作るか — ローカル実行（1a）か CI＋secrets（1b）か。
+この選択で、次のコーディングが「ワークフロー作成」か「集計だけ」かが決まる。
+
+## ☀️ 明日の朝（通勤）からの再スタート用
+
+1. この `NEXT_STEPS.md` を開く（いまここ）。
+2. 「次回はここから」の **1. 本物の結果を入れる** に進む。
+3. まず上の「次回まず答える1問」（1a ローカル / 1b CI）を決める。
+4. APIキーがすぐ使えないなら、先に **2. embedding 指標の埋め込み元決め**から
+   始めてもよい（コードだけで進む）。
+- 中断時の状態: `origin/main` = `b471e90`、全変更マージ済み、未push の保留なし。
