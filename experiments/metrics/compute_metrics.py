@@ -101,14 +101,14 @@ def mean_pairwise_sim(texts):
             s = lexical_sim(texts[i], texts[j])
             if s is not None:
                 sims.append(s)
-    return round(statistics.mean(sims), 4) if sims else None
+    return statistics.mean(sims) if sims else None  # full precision; round at output
 
 
 def mean_cross_distance(a_texts, b_texts):
     """Mean (1 - lexical_sim) over the cross product of two response lists."""
     pairs = [lexical_sim(a, b) for a in a_texts for b in b_texts]
     pairs = [p for p in pairs if p is not None]
-    return round(1 - statistics.mean(pairs), 4) if pairs else None
+    return (1 - statistics.mean(pairs)) if pairs else None  # full precision; round at output
 
 
 def case_metrics(records, baseline_lookup):
@@ -135,7 +135,7 @@ def case_metrics(records, baseline_lookup):
     yesno_flip_rate = None
     if forced_binary and len(yesno) >= 2:
         majority = max(set(yesno), key=yesno.count)
-        yesno_flip_rate = round(1 - yesno.count(majority) / len(yesno), 4)
+        yesno_flip_rate = 1 - yesno.count(majority) / len(yesno)  # round at output
 
     # --- lexical stability proxies (surface form, NOT meaning) ---
     consistency_lexical = mean_pairwise_sim(valid)
@@ -167,8 +167,8 @@ def case_metrics(records, baseline_lookup):
             if recovered is not None:
                 recovered_texts.append(recovered)
                 acks.append(1 if _INCONSISTENCY_RE.search(recovered) else 0)
-        recovery_lexical_change_vs_prior = round(statistics.mean(changes), 4) if changes else None
-        recovery_ack_rate = round(statistics.mean(acks), 4) if acks else None
+        recovery_lexical_change_vs_prior = statistics.mean(changes) if changes else None
+        recovery_ack_rate = statistics.mean(acks) if acks else None
         # baseline = the matched_control case (e.g. the neutral rung)
         baseline_id = meta.get("matched_control")
         if baseline_id and recovered_texts:
@@ -219,7 +219,7 @@ def aggregate(rows):
 
     def mean_of(rs, key):
         vals = [r[key] for r in rs if isinstance(r.get(key), (int, float)) and not isinstance(r.get(key), bool)]
-        return round(statistics.mean(vals), 4) if vals else None
+        return statistics.mean(vals) if vals else None  # full precision; round at output
 
     out = []
     for (prov, model, stressor, level), rs in sorted(
@@ -239,6 +239,11 @@ def aggregate(rows):
     return out
 
 
+def _round_for_csv(row, ndigits=6):
+    # Round floats only for the human-readable CSV; JSON keeps full precision.
+    return {k: (round(v, ndigits) if isinstance(v, float) else v) for k, v in row.items()}
+
+
 def write_csv(path, rows):
     if not rows:
         return
@@ -246,7 +251,7 @@ def write_csv(path, rows):
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=cols)
         w.writeheader()
-        w.writerows(rows)
+        w.writerows(_round_for_csv(r) for r in rows)
 
 
 def main():

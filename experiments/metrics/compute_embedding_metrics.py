@@ -83,7 +83,7 @@ def mean_pairwise_distance(vectors):
             d = cosine_dist(vs[i], vs[j])
             if d is not None:
                 ds.append(d)
-    return round(sum(ds) / len(ds), 4) if ds else None
+    return sum(ds) / len(ds) if ds else None  # full precision; round only at output
 
 
 def mean_cross_distance(a_vecs, b_vecs):
@@ -91,7 +91,7 @@ def mean_cross_distance(a_vecs, b_vecs):
     b_vecs = [v for v in b_vecs if v]
     ds = [cosine_dist(a, b) for a in a_vecs for b in b_vecs]
     ds = [d for d in ds if d is not None]
-    return round(sum(ds) / len(ds), 4) if ds else None
+    return sum(ds) / len(ds) if ds else None  # full precision; round only at output
 
 
 def _redactor():
@@ -126,7 +126,10 @@ def embed_openai(texts, model):
         {"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
         {"model": model, "input": texts},
     )
-    return [d["embedding"] for d in out["data"]]
+    # Sort by index so the returned order matches the input order regardless of
+    # how the API orders `data`.
+    data = sorted(out["data"], key=lambda d: d.get("index", 0))
+    return [d["embedding"] for d in data]
 
 
 def embed_voyage(texts, model):
@@ -136,7 +139,8 @@ def embed_voyage(texts, model):
         {"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
         {"model": model, "input": texts},
     )
-    return [d["embedding"] for d in out["data"]]
+    data = sorted(out["data"], key=lambda d: d.get("index", 0))
+    return [d["embedding"] for d in data]
 
 
 def embed_google(texts, model):
@@ -226,7 +230,7 @@ def case_metrics(records, emb, baseline_lookup):
             d = cosine_dist(rv, pv) if (rv and pv) else None
             if d is not None:
                 changes.append(d)
-        rec_change_vs_prior = round(sum(changes) / len(changes), 4) if changes else None
+        rec_change_vs_prior = (sum(changes) / len(changes)) if changes else None
         baseline_id = meta.get("matched_control")
         if baseline_id and recovered_vecs:
             base_texts = baseline_lookup.get(
@@ -261,7 +265,7 @@ def aggregate(rows):
 
     def mean_of(rs, key):
         vals = [r[key] for r in rs if isinstance(r.get(key), (int, float)) and not isinstance(r.get(key), bool)]
-        return round(sum(vals) / len(vals), 4) if vals else None
+        return sum(vals) / len(vals) if vals else None  # full precision; round only at output
 
     out = []
     for (prov, model, stressor, level), rs in sorted(
@@ -272,9 +276,18 @@ def aggregate(rows):
             "provider": prov, "model": model, "stressor": stressor, "intensity_level": level,
             "n_cases": len(rs),
             "mean_semantic_drift": mean_of(rs, "semantic_drift__embedding"),
+            "mean_recovery_semantic_change_vs_prior": mean_of(rs, "recovery_semantic_change_vs_prior__embedding"),
             "mean_residual_distance_to_baseline": mean_of(rs, "residual_distance_to_baseline__embedding"),
             "n_recovery_baseline_missing": sum(1 for r in rs if r.get("recovery_baseline_missing") is True),
         })
+    return out
+
+
+def _round_for_csv(row, ndigits=6):
+    # Round floats only for the human-readable CSV; JSON keeps full precision.
+    out = {}
+    for k, v in row.items():
+        out[k] = round(v, ndigits) if isinstance(v, float) else v
     return out
 
 
@@ -284,7 +297,7 @@ def write_csv(path, rows):
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         w.writeheader()
-        w.writerows(rows)
+        w.writerows(_round_for_csv(r) for r in rows)
 
 
 def self_test():

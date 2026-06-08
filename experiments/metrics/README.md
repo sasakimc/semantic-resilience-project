@@ -60,9 +60,23 @@ Notes:
 - API keys are read only from the environment; request URLs are never stored,
   and any error text is redacted (matches the runner's policy).
 - Identical texts are embedded once per run (in-memory dedup).
+- Distances are kept at full float precision internally and in JSON output;
+  only the CSV is rounded (to 6 dp), so no precision is lost for downstream
+  analysis.
 - This implements the two `requires_embedding` metrics listed below; they remain
   deferred in the stdlib-only `compute_metrics.py` by design (that script stays
   dependency- and network-free).
+
+Future improvements (noted, not yet implemented):
+- **Google batching**: switch the per-text `embedContent` loop to
+  `batchEmbedContents` for large runs.
+- **Baseline as a distribution**: residual distance currently compares the
+  recovered answer to the baseline case's original-variant responses (already
+  multiple points across repeats); consider widening to all variants/repeats
+  and reporting distance to the baseline *distribution* (e.g. mean + spread).
+- **Beyond cosine**: cosine captures direction only. For the "reorganization"
+  claim, consider Mahalanobis distance or a local-neighborhood shift to detect
+  movement within the semantic space, not just angular change.
 
 
 
