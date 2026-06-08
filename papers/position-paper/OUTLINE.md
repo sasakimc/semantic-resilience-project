@@ -30,13 +30,23 @@ Current AI safety research treats hallucination, jailbreaks, sycophancy, alignme
 
 ## 2. Background and Related Work
 
-- **Deep linear networks and semantic development (Saxe et al.).** Learning dynamics that produce staged emergence of semantic hierarchy, analyzable via singular values/modes — the historical and mathematical anchor for "meaning as mode."
-- **Mechanistic interpretability.** Circuits, features, attention, and representations as the substrate in which semantic modes could be observed.
-- **Brain network science.** Connectomes, network reorganization, plasticity, dementia/injury — biological precedents for formation, collapse, and reorganization of meaning.
-- **Cognitive psychology.** Distortion taxonomies (overgeneralization, fixation, self-justification, confirmation bias, catastrophizing) as a vocabulary for biased meaning-making.
+The lineage (full prose with citations in [`DRAFT.md`](DRAFT.md) §2):
+
+```text
+distributional semantics → sentence-embedding probing → contextual reps (ELMo, BERT)
+  → BERTology → denoising seq2seq (BART, T5) → mechanistic interpretability
+    → AI-safety failure modes → Semantic Mode Theory
+```
+
+- **Sentence-embedding probing (Conneau, Lample, Barrault, Baroni; Adi et al.).** What linguistic/semantic content a representation encodes must be *measured*, not assumed — motivating our operational criteria.
+- **BERTology and contextual representations (Devlin et al.; Rogers et al.; Mickus et al.; Clark et al.).** Contextual semantic structure exists but is contaminated by non-semantic factors (e.g. position); attention sometimes aligns with structure but is not, alone, an explanation.
+- **Denoising seq2seq (BART, T5) and data-to-text probing.** Reconstruction of corrupted input as the closest existing analogue to our *recovery* phase; encoder-side detection of omission/distortion as a *distortion/collapse* signal.
+- **Mechanistic interpretability (Olah; Transformer Circuits; induction heads; SAEs).** The vocabulary — feature, direction, circuit, residual stream, induction head, SAE feature — against which a semantic mode must distinguish itself.
+- **Deep linear networks and semantic development (Saxe et al.).** Staged emergence of semantic hierarchy via singular values/modes — the mathematical anchor for "meaning as mode."
+- **Brain network science / cognitive psychology.** Biological precedents for formation/collapse/reorganization; distortion taxonomies as a vocabulary for biased meaning-making.
 - **Modal / spectral / reliability analysis.** SVD, PCA, spectral methods, stability and failure-threshold analysis imported from structural and computational systems thinking.
 
-Summary: the paper sits at the intersection of these, and its novelty is the *transfer* of stability/collapse/recovery reasoning into the study of meaning.
+Summary: the paper sits at the end of this lineage. Its novelty is not a new internal part but the *transfer* of stability/collapse/recovery (stress) reasoning into the study of meaning, as an operational layer over existing units.
 
 ## 3. The Semantic Mode Hypothesis
 
