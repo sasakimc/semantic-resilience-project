@@ -210,9 +210,9 @@ semantic-mode-theory/
 - LLM 評価
 - 脳科学・認知科学からのコメント
 
-## License & Citation
+## License
 
-デュアルライセンス: **コードは [MIT](LICENSE)**、**文書・論文・プロンプトセットは [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)**。詳細は [`LICENSING.md`](LICENSING.md)。本研究を利用・発展させる場合は、[`CITATION.cff`](CITATION.cff) に従って引用してください。
+コードは MIT License、文書・研究テキスト・プロンプトセット・実験素材は、特に断りのない限り CC BY 4.0 でライセンスされる。詳細は [`LICENSING.md`](LICENSING.md) を参照。本研究を利用・発展させる場合は、[`CITATION.cff`](CITATION.cff) に従って引用してください。
 
 ---
 

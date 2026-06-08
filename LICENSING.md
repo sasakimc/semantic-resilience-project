@@ -1,49 +1,61 @@
 # Licensing
 
-This repository contains both **software** and **research documentation**, which
-are licensed separately.
+This repository is a **mixed repository**: it contains software, research text,
+and experimental materials, which are licensed separately. This document states
+which license applies to what.
 
-## Software — MIT License
+## Code — MIT License
 
-The code is licensed under the **MIT License** (see [`LICENSE`](LICENSE)).
+Source code is licensed under the **MIT License** (see [`LICENSE`](LICENSE)).
+SPDX identifier: `MIT`.
 
 This applies to:
 
 - `experiments/runners/` (e.g. `run_stress_set.py`)
-- any other scripts/code added to the repository
+- scripts
+- schema validation utilities
+- future analysis code
 
-SPDX identifier: `MIT`
+## Documentation and research text — CC BY 4.0
 
-## Documentation, papers, and prompt sets — CC BY 4.0
-
-The research writing, prompt sets, and other documentation are licensed under the
-**Creative Commons Attribution 4.0 International (CC BY 4.0)** license.
-You may share and adapt the material for any purpose, including commercially,
-provided you give appropriate credit.
-
-Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode
-Summary: https://creativecommons.org/licenses/by/4.0/
+Documentation and research writing are licensed under the **Creative Commons
+Attribution 4.0 International (CC BY 4.0)** license. SPDX identifier:
+`CC-BY-4.0`. Full text: https://creativecommons.org/licenses/by/4.0/legalcode
 
 This applies to:
 
-- `README.md`, `README.ja.md`
-- `papers/` (the position paper outline, draft, metrics appendix)
-- `experiments/**/*.md` and the prompt sets under `experiments/prompts/`
-  (`*.jsonl`)
-- `experiments/results/**` documentation and schema
-- `roadmap/` work logs
+- `README.md`
+- `README.ja.md`
+- `papers/`
+- `roadmap/`
+- `references/`
+- explanatory Markdown files
 
-SPDX identifier: `CC-BY-4.0`
+## Prompt sets and experimental materials — CC BY 4.0
 
-## How to attribute
+Prompt sets and experimental materials are also licensed under **CC BY 4.0**.
+
+This applies to:
+
+- `experiments/prompts/`
+- prompt JSONL files
+- experiment protocol documents
+
+## Results
+
+Real model output files under `experiments/results/runs/` are a special case:
+
+- Each result file should carry its own provenance (model, version, date,
+  settings, prompts), as produced by the runner.
+- Generated model outputs may be subject to the terms of the model or provider
+  used to produce them.
+- Nothing here should be read as implying that generated model outputs are
+  automatically covered by this repository's licenses. Check the relevant
+  provider's terms before redistributing model outputs.
+
+## Attribution
 
 When using or citing this work, please credit it as described in
-[`CITATION.cff`](CITATION.cff). At minimum, cite the project title
+[`CITATION.cff`](CITATION.cff): at minimum the project title
 (*Semantic Mode Theory*), the author (`sasakimc`), and a link to this
 repository.
-
-## Note
-
-This is a preliminary research project (working hypotheses, not peer-reviewed).
-Licensing does not imply that the claims are validated; see the status notes in
-the README and the position paper.

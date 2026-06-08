@@ -209,9 +209,9 @@ In the future, the following forms of participation and collaboration are welcom
 - LLM evaluation
 - Comments from neuroscience and cognitive science
 
-## License & Citation
+## License
 
-Dual-licensed: **code under [MIT](LICENSE)**, and **documentation, papers, and prompt sets under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)**. Details in [`LICENSING.md`](LICENSING.md). If you use or build on this work, please cite it as described in [`CITATION.cff`](CITATION.cff).
+Code is licensed under the MIT License. Documentation, research text, prompt sets, and experimental materials are licensed under CC BY 4.0 unless otherwise noted. See [`LICENSING.md`](LICENSING.md) for details. If you use or build on this work, please cite it as described in [`CITATION.cff`](CITATION.cff).
 
 ---
 
