@@ -65,10 +65,11 @@ Denoising sequence-to-sequence pretraining — BART (Lewis et al., 2020) and the
 text-to-text T5 (Raffel et al., 2020) — learns to reconstruct corrupted input.
 This is the closest existing analogue to our **recovery** phase: meaning
 re-formed from a damaged signal. Recent probing of data-to-text (RDF-to-Text)
-generation (2024) further reports that entities omitted or distorted in the
-output can be detected from encoder output embeddings — an encoder-side signal
-of information loss that maps naturally onto our **distortion / collapse**
-observables. *(Full citation to be added.)*
+generation (Faille, Gatt & Gardent, 2024, arXiv:2409.16707) further reports
+that entities omitted or distorted in the output can be detected from the
+encoder output embeddings of BART and T5 — an encoder-side signal of
+information loss that maps naturally onto our **distortion / collapse**
+observables.
 
 ### D. Mechanistic interpretability and Transformer circuits
 
@@ -247,7 +248,7 @@ explicit and checkable.
 **Denoising seq2seq and data-to-text**
 - Lewis, M., et al. (2020). BART: Denoising sequence-to-sequence pre-training for natural language generation, translation, and comprehension. ACL.
 - Raffel, C., et al. (2020). Exploring the limits of transfer learning with a unified text-to-text transformer (T5). JMLR.
-- [RDF-to-Text probing of omission/distortion in encoder output embeddings, 2024 — full citation to be added.]
+- Faille, J., Gatt, A., & Gardent, C. (2024). Probing omissions and distortions in transformer-based RDF-to-Text models. arXiv:2409.16707.
 
 **Mechanistic interpretability**
 - Olah, C., et al. (2018). The building blocks of interpretability. Distill.
