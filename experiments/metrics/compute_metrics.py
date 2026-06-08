@@ -148,11 +148,15 @@ def case_metrics(records, baseline_lookup):
         )
 
     # --- recovery: three-point comparison baseline -> collapsed(prior) -> recovered ---
+    # All distances here are LEXICAL (surface form), not semantic. The proper
+    # semantic version is residual_distance_to_baseline (deferred, embedding).
     is_recovery = bool(ref.get("is_recovery"))
-    recovery_change_vs_prior = None      # how far recovered moved FROM the collapsed answer
-    recovery_distance_vs_baseline = None # how far recovered is FROM the clean baseline
+    recovery_lexical_change_vs_prior = None      # how far recovered moved FROM the collapsed answer
+    recovery_lexical_distance_vs_baseline = None # how far recovered is FROM the clean baseline
     recovery_ack_rate = None
+    recovery_baseline_missing = None
     if is_recovery:
+        recovery_baseline_missing = True  # until a baseline distance is successfully computed
         changes, acks = [], []
         recovered_texts = []
         for r in records:
@@ -163,7 +167,7 @@ def case_metrics(records, baseline_lookup):
             if recovered is not None:
                 recovered_texts.append(recovered)
                 acks.append(1 if _INCONSISTENCY_RE.search(recovered) else 0)
-        recovery_change_vs_prior = round(statistics.mean(changes), 4) if changes else None
+        recovery_lexical_change_vs_prior = round(statistics.mean(changes), 4) if changes else None
         recovery_ack_rate = round(statistics.mean(acks), 4) if acks else None
         # baseline = the matched_control case (e.g. the neutral rung)
         baseline_id = meta.get("matched_control")
@@ -172,7 +176,8 @@ def case_metrics(records, baseline_lookup):
                 (ref.get("provider"), ref.get("model"), ref.get("set_file"), baseline_id), []
             )
             if base:
-                recovery_distance_vs_baseline = mean_cross_distance(recovered_texts, base)
+                recovery_lexical_distance_vs_baseline = mean_cross_distance(recovered_texts, base)
+                recovery_baseline_missing = False
 
     row = {
         "provider": ref.get("provider"),
@@ -197,8 +202,9 @@ def case_metrics(records, baseline_lookup):
         # lexical STABILITY proxies (surface form, not meaning)
         "consistency_lexical_stability__lexical": consistency_lexical,
         "prompt_perturbation_sensitivity__lexical": prompt_perturbation_sensitivity,
-        "recovery_change_vs_prior__lexical": recovery_change_vs_prior,
-        "recovery_distance_vs_baseline__lexical": recovery_distance_vs_baseline,
+        "recovery_lexical_change_vs_prior__lexical": recovery_lexical_change_vs_prior,
+        "recovery_lexical_distance_vs_baseline__lexical": recovery_lexical_distance_vs_baseline,
+        "recovery_baseline_missing": recovery_baseline_missing,
         "recovery_inconsistency_ack_rate__lexical": recovery_ack_rate,
     }
     for name, method in DEFERRED_METRICS.items():
@@ -226,8 +232,9 @@ def aggregate(rows):
             "mean_yesno_flip_rate": mean_of(rs, "yesno_flip_rate__structural"),
             "mean_consistency_lexical_stability": mean_of(rs, "consistency_lexical_stability__lexical"),
             "mean_prompt_perturbation_sensitivity": mean_of(rs, "prompt_perturbation_sensitivity__lexical"),
-            "mean_recovery_change_vs_prior": mean_of(rs, "recovery_change_vs_prior__lexical"),
-            "mean_recovery_distance_vs_baseline": mean_of(rs, "recovery_distance_vs_baseline__lexical"),
+            "mean_recovery_lexical_change_vs_prior": mean_of(rs, "recovery_lexical_change_vs_prior__lexical"),
+            "mean_recovery_lexical_distance_vs_baseline": mean_of(rs, "recovery_lexical_distance_vs_baseline__lexical"),
+            "n_recovery_baseline_missing": sum(1 for r in rs if r.get("recovery_baseline_missing") is True),
         })
     return out
 
