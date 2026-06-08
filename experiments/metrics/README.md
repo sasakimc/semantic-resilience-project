@@ -23,7 +23,48 @@ python compute_metrics.py --runs ../results/runs/*.jsonl --out-prefix ../results
 `synthetic_example: true` records are skipped automatically; unparseable lines
 are skipped with a warning.
 
-## What is computed (and what is not)
+## `compute_embedding_metrics.py` (semantic companion)
+
+The *semantic* counterpart to `compute_metrics.py`. It embeds responses with a
+pluggable provider and computes cosine-based metrics — the proper version of
+the distances the lexical script only approximates. This is where the
+**primary P3 signal** lives.
+
+Providers (API key from env): `openai` (`OPENAI_API_KEY`), `google`
+(`GOOGLE_API_KEY`), `voyage` (`VOYAGE_API_KEY`). Each has a default model,
+overridable with `--embed-model`.
+
+```bash
+# Verify the vector math offline (no key, no network)
+python compute_embedding_metrics.py --self-test
+
+# See what would be embedded, without calling the API
+python compute_embedding_metrics.py --runs ../results/runs/*.jsonl \
+    --embed-provider openai --dry-run
+
+# Real run (needs the provider key)
+python compute_embedding_metrics.py --runs ../results/runs/*.jsonl \
+    --embed-provider openai --out-prefix ../results/metrics/run1
+```
+
+Metrics (method = `embedding:<provider>/<model>`, recorded per row):
+
+| Metric | Meaning |
+|---|---|
+| `semantic_drift__embedding` | Within a case, mean pairwise cosine **distance** across responses (variants + repeats). Semantic instability (P1). |
+| `recovery_semantic_change_vs_prior__embedding` | For recovery cases: cosine distance of the recovered answer from the prior (collapse-induced) answer. |
+| `residual_distance_to_baseline__embedding` | For recovery cases: cosine distance of the recovered answer from the clean baseline (`matched_control`). **Primary P3 signal** — reorganization (not restoration) predicts this stays > 0 while `change_vs_prior` is also > 0. |
+| `recovery_baseline_missing` | `true` when no baseline could be embedded (missing `matched_control`); keeps excluded cases countable. |
+
+Notes:
+- API keys are read only from the environment; request URLs are never stored,
+  and any error text is redacted (matches the runner's policy).
+- Identical texts are embedded once per run (in-memory dedup).
+- This implements the two `requires_embedding` metrics listed below; they remain
+  deferred in the stdlib-only `compute_metrics.py` by design (that script stays
+  dependency- and network-free).
+
+
 
 Every metric column is suffixed with its **method**, so the gaps are explicit
 and nothing is fabricated:
