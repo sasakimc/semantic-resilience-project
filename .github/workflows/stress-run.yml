@@ -53,6 +53,7 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -83,22 +84,22 @@ jobs:
           mkdir -p experiments/results/runs experiments/results/metrics
           out="experiments/results/runs/${base}.jsonl"
 
-          extra=""
-          if [ "$INCLUDE_PARAPHRASES" = "true" ]; then extra="--include-paraphrases"; fi
+          extra_args=()
+          if [ "$INCLUDE_PARAPHRASES" = "true" ]; then extra_args+=(--include-paraphrases); fi
 
           python experiments/runners/run_stress_set.py \
             --set "$SET" --provider "$PROVIDER" --model "$MODEL" \
             --repeats "$REPEATS" --temperature "$TEMPERATURE" --max-tokens "$MAX_TOKENS" \
-            $extra --out "$out"
+            "${extra_args[@]}" --out "$out"
 
           python experiments/metrics/compute_metrics.py \
             --runs "$out" --out-prefix "experiments/results/metrics/${base}"
 
           if [ "$EMBED_PROVIDER" != "none" ]; then
-            em=""
-            if [ -n "$EMBED_MODEL" ]; then em="--embed-model $EMBED_MODEL"; fi
+            embed_args=()
+            if [ -n "$EMBED_MODEL" ]; then embed_args+=(--embed-model "$EMBED_MODEL"); fi
             python experiments/metrics/compute_embedding_metrics.py \
-              --runs "$out" --embed-provider "$EMBED_PROVIDER" $em \
+              --runs "$out" --embed-provider "$EMBED_PROVIDER" "${embed_args[@]}" \
               --out-prefix "experiments/results/metrics/${base}"
           fi
 
@@ -107,6 +108,6 @@ jobs:
       - name: Upload results artifact
         uses: actions/upload-artifact@v4
         with:
-          name: stress-results
+          name: stress-results-${{ inputs.provider }}-${{ github.run_id }}
           path: experiments/results/
           if-no-files-found: error
