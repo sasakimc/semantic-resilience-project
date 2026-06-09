@@ -78,3 +78,18 @@ python run_stress_set.py \
   that observations and interpretations stay separate.
 - **Embedding / white-box capture.** Black-box text responses only; white-box
   signatures on open-weight models are a separate, later tool.
+
+## Running in CI
+
+Two GitHub Actions workflows are provided:
+
+- **`.github/workflows/ci.yml`** — secrets-free checks on every push/PR: the
+  embedding vector-math self-test, prompt-set/template validation, and an
+  offline metrics smoke test. No model is called.
+- **`.github/workflows/stress-run.yml`** — manual (`workflow_dispatch`) real
+  run: it executes a prompt set against the chosen provider/model, computes
+  lexical (and optionally embedding) metrics, and **uploads the output as an
+  artifact**. It does *not* auto-commit results — per the integrity policy,
+  real model outputs are downloaded, inspected for provenance, and committed by
+  a human. Add the provider key(s) as repo secrets first
+  (`ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GOOGLE_API_KEY` / `VOYAGE_API_KEY`).

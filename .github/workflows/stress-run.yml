@@ -1,0 +1,112 @@
+name: Stress run
+
+# Manually-triggered real run: sends a prompt set to a model, computes lexical
+# (and optionally embedding) metrics, and uploads everything as an artifact.
+#
+# It does NOT auto-commit results: per the repository's integrity policy, real
+# model outputs are reviewed and committed by a human (download the artifact,
+# inspect provenance, then commit under experiments/results/). Requires repo
+# secrets for whichever providers you use:
+#   ANTHROPIC_API_KEY / OPENAI_API_KEY / GOOGLE_API_KEY / VOYAGE_API_KEY
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "Chat model provider"
+        type: choice
+        options: [anthropic, openai, google]
+        default: anthropic
+      model:
+        description: "Chat model id (e.g. claude-opus-4-8, gpt-4o, gemini-1.5-pro)"
+        required: true
+        default: claude-opus-4-8
+      set:
+        description: "Prompt set path"
+        required: true
+        default: experiments/prompts/contradiction-ladder.v0.1.jsonl
+      repeats:
+        description: "Repeats per case"
+        default: "5"
+      temperature:
+        description: "Sampling temperature"
+        default: "0.0"
+      max_tokens:
+        description: "Max tokens per response"
+        default: "512"
+      include_paraphrases:
+        description: "Also send paraphrase variants"
+        type: boolean
+        default: false
+      embed_provider:
+        description: "Embedding provider for semantic metrics (or none)"
+        type: choice
+        options: [none, openai, google, voyage]
+        default: none
+      embed_model:
+        description: "Embedding model id (blank = provider default)"
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run stress set and compute metrics
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
+          PROVIDER: ${{ inputs.provider }}
+          MODEL: ${{ inputs.model }}
+          SET: ${{ inputs.set }}
+          REPEATS: ${{ inputs.repeats }}
+          TEMPERATURE: ${{ inputs.temperature }}
+          MAX_TOKENS: ${{ inputs.max_tokens }}
+          INCLUDE_PARAPHRASES: ${{ inputs.include_paraphrases }}
+          EMBED_PROVIDER: ${{ inputs.embed_provider }}
+          EMBED_MODEL: ${{ inputs.embed_model }}
+        run: |
+          set -euo pipefail
+          ts=$(date -u +%Y%m%d-%H%M%S)
+          safe_model=$(printf '%s' "$MODEL" | tr '/:' '__')
+          base="${ts}-${PROVIDER}-${safe_model}"
+          mkdir -p experiments/results/runs experiments/results/metrics
+          out="experiments/results/runs/${base}.jsonl"
+
+          extra=""
+          if [ "$INCLUDE_PARAPHRASES" = "true" ]; then extra="--include-paraphrases"; fi
+
+          python experiments/runners/run_stress_set.py \
+            --set "$SET" --provider "$PROVIDER" --model "$MODEL" \
+            --repeats "$REPEATS" --temperature "$TEMPERATURE" --max-tokens "$MAX_TOKENS" \
+            $extra --out "$out"
+
+          python experiments/metrics/compute_metrics.py \
+            --runs "$out" --out-prefix "experiments/results/metrics/${base}"
+
+          if [ "$EMBED_PROVIDER" != "none" ]; then
+            em=""
+            if [ -n "$EMBED_MODEL" ]; then em="--embed-model $EMBED_MODEL"; fi
+            python experiments/metrics/compute_embedding_metrics.py \
+              --runs "$out" --embed-provider "$EMBED_PROVIDER" $em \
+              --out-prefix "experiments/results/metrics/${base}"
+          fi
+
+          echo "Artifact base name: ${base}"
+
+      - name: Upload results artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stress-results
+          path: experiments/results/
+          if-no-files-found: error

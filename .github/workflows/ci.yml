@@ -1,0 +1,96 @@
+name: CI
+
+# Secrets-free checks that run on every push and PR. They validate the code's
+# own logic and the prompt-set files; they do NOT call any model API.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Vector-math self-test (no network/key)
+        run: python experiments/metrics/compute_embedding_metrics.py --self-test
+
+      - name: Validate prompt sets and results schema example
+        run: |
+          python - <<'PY'
+          import glob, json, sys
+
+          problems = []
+
+          # 1. Every prompt-set line must be valid JSON with an id; answer_format,
+          #    if present, must be a known value.
+          for path in sorted(glob.glob("experiments/prompts/*.jsonl")):
+              for i, line in enumerate(open(path, encoding="utf-8"), 1):
+                  line = line.strip()
+                  if not line:
+                      continue
+                  try:
+                      obj = json.loads(line)
+                  except json.JSONDecodeError as e:
+                      problems.append(f"{path}:{i}: invalid JSON: {e}")
+                      continue
+                  if "id" not in obj:
+                      problems.append(f"{path}:{i}: missing 'id'")
+                  af = obj.get("answer_format")
+                  if af is not None and af not in ("binary",):
+                      problems.append(f"{path}:{i}: unexpected answer_format {af!r}")
+
+          # 2. The schema example must parse and be flagged synthetic.
+          for path in glob.glob("experiments/results/templates/*.jsonl"):
+              for i, line in enumerate(open(path, encoding="utf-8"), 1):
+                  line = line.strip()
+                  if not line:
+                      continue
+                  obj = json.loads(line)
+                  if obj.get("synthetic_example") is not True:
+                      problems.append(f"{path}:{i}: template must have synthetic_example=true")
+
+          if problems:
+              print("\n".join(problems))
+              sys.exit(1)
+          print("Prompt sets and templates validated OK.")
+          PY
+
+      - name: Metrics smoke test (offline, synthetic input)
+        run: |
+          python - <<'PY'
+          import json, subprocess, tempfile, os
+          # A tiny real-shaped (non-synthetic) record so the lexical script runs
+          # end to end without any API call.
+          rec = {
+            "schema_version": "results-record/0.2", "provider": "ci", "model": "none",
+            "model_version_reported": None, "set_file": "smoke.jsonl",
+            "prompt_set_sha256": "0", "case_id": "c0",
+            "case_metadata": {"id": "c0", "answer_format": "binary"},
+            "stressor": "contradiction", "intensity": "neutral", "intensity_level": 0,
+            "target_prediction": "P1,P2", "variant": "original", "repeat_index": 0,
+            "is_recovery": False, "conversation": [], "response_text": "Yes.",
+            "dry_run": False, "error": None, "synthetic_example": False,
+          }
+          with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
+              f.write(json.dumps(rec) + "\n")
+              path = f.name
+          out = subprocess.run(
+              ["python", "experiments/metrics/compute_metrics.py", "--runs", path],
+              capture_output=True, text=True,
+          )
+          os.unlink(path)
+          assert out.returncode == 0, out.stderr
+          data = json.loads(out.stdout)
+          assert data["per_case"], "expected at least one per-case row"
+          print("Metrics smoke test OK.")
+          PY
