@@ -1,6 +1,6 @@
 # 次の一手 / 作業メモ
 
-_最終更新: 2026-06-07（PR #6 マージ済み）_
+_最終更新: 2026-06-09（embedding 指標 + CI パイプライン まで完了。`origin/main` = `d7f486e`）_
 
 再開を速くするための引き継ぎメモ。次回はまずこのファイルを開くこと。
 
@@ -89,48 +89,55 @@ roadmap/
   - `yesno_flip_rate` は **forced-binary 限定**（`answer_format:"binary"`）の collapse *proxy*。
   - recovery は三点比較: `recovery_lexical_change_vs_prior` ＋ `recovery_lexical_distance_vs_baseline`（matched_control 参照）＋ `recovery_baseline_missing` フラグ。
 
+## ✅ 済んだこと（2026-06-09）
+
+- **embedding 指標 `experiments/metrics/compute_embedding_metrics.py`**（意味版・cosine）。
+  `semantic_drift`(P1) / `recovery_semantic_change_vs_prior`(P2) /
+  **`residual_distance_to_baseline`(P3 本命)** / `recovery_baseline_missing`。
+  埋め込み元プラグイン（openai/google/voyage）、self-test/dry-run。ChatGPTレビュー反映済み。
+- **CI パイプライン**: `.github/workflows/ci.yml`（secrets不要の自動チェック）＋
+  `.github/workflows/stress-run.yml`（手動・secrets で runner→metrics→embedding を
+  実行し artifact 化、自動コミットなし）。→「再現可能な研究パイプライン」に到達。
+
 ## 次回はここから（おすすめ順）
 
-1. **本物の結果を入れる**（どちらか選ぶ）— ここが次の本丸:
-   - (a) 手元で APIキー付きランナーを実行し `results/runs/*.jsonl` をコミット、または
-   - (b) GitHub Actions ワークフロー＋ secrets
-     （`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`）で CI 実行。
-   - まずは **contradiction ladder** から（崩壊閾値が一番きれいに見える: 段 0→4 の
-     非線形劣化、段5で P3 の再編成）。実行コマンド例は
-     `experiments/runners/README.md`。
-   - 取得後: `python experiments/metrics/compute_metrics.py --runs experiments/results/runs/*.jsonl --out-prefix ...`
-2. **embedding 指標の実装**（本命）: 優先順位は
-   `residual_distance_to_baseline → semantic_drift`。まず**埋め込み元を決める**
-   （API か ローカルモデルか）。これが P3「回復＝再編成」を連続量で測る本丸。
+**残るは「本物の結果投入」だけ。** コード基盤（runner / metrics / embedding / CI）は揃った。
+
+1. **本物の結果を入れる**（どちらか選ぶ）:
+   - (1a) 手元で APIキー付きランナーを実行 → `experiments/results/runs/*.jsonl` をコミット。
+   - (1b) リポジトリに secrets 登録（`ANTHROPIC_API_KEY` 等）→ Actions タブの
+     **「Stress run」** を手動実行 → artifact をダウンロード → 確認してコミット。
+   - まずは **contradiction ladder** から（段 0→4 の非線形劣化、段5で P3 の再編成）。
+2. **集計**: 取得後に
+   `python experiments/metrics/compute_metrics.py --runs experiments/results/runs/*.jsonl --out-prefix ...`
+   ＋（埋め込み元を決めて）`compute_embedding_metrics.py` を実行。
 3. **最初の結果まとめ:** 短い `papers/position-paper/RESULTS.md`（または DRAFT に
-   §Results を追加）。ラダーの結果を provenance 完備で報告 → arXiv 向け
-   research article に格上げ。
+   §Results）。provenance 完備で報告 → arXiv 向け research article に格上げ。
+   ※ データ前でも RESULTS.md の枠（章立て・記入欄）は先に作れる。
 
 ## 小さめの宿題（あると良い）
 
+- ~~公開研究プロジェクトとして LICENSE と CITATION.cff を追加。~~ ✅ 済
 - `§11 Research Perspective`: プレースホルダを、3〜4文の一人称
   epistemic-provenance 文に置換（構造工学 → 確率/リスク → 複雑系 →
   脳科学 → LLM）。
-- contradiction ラダーのワークフローが通ったら、他のストレッサー
-  （ambiguity, value-conflict）も段階ラダー化する。
-- ~~公開研究プロジェクトとして LICENSE と CITATION.cff を追加。~~ ✅ 済
 - Position Paper の残り章（§0,1,7,8,9,10,12）を埋める（§2 Related Work は済）。
 - contradiction ラダーのワークフローが通ったら、他のストレッサー
   （ambiguity, value-conflict）も段階ラダー化する。
-- `§11 Research Perspective`: プレースホルダを一人称 epistemic-provenance 文に置換。
+- embedding 指標の発展（README 記載）: Google batchEmbedContents /
+  baseline を分布として扱う / cosine を超える距離（Mahalanobis・近傍シフト）。
 - GitHub の About 文・topics（ai-safety, interpretability,
   cognitive-science）。これは GitHub 設定の手動操作（あなた側）。
 
 ## 次回まず答える1問
 
 本物の結果をどう作るか — ローカル実行（1a）か CI＋secrets（1b）か。
-この選択で、次のコーディングが「ワークフロー作成」か「集計だけ」かが決まる。
+（CI ワークフローは既に用意済みなので、1b は secrets 登録 → 実行ボタンだけ。）
 
-## ☀️ 明日の朝（通勤）からの再スタート用
+## ☀️ 次回の再スタート用
 
 1. この `NEXT_STEPS.md` を開く（いまここ）。
-2. 「次回はここから」の **1. 本物の結果を入れる** に進む。
-3. まず上の「次回まず答える1問」（1a ローカル / 1b CI）を決める。
-4. APIキーがすぐ使えないなら、先に **2. embedding 指標の埋め込み元決め**から
-   始めてもよい（コードだけで進む）。
-- 中断時の状態: `origin/main` = `b471e90`、全変更マージ済み、未push の保留なし。
+2. 「次回まず答える1問」（1a ローカル / 1b CI）を決める。
+3. データ取得 → 集計（lexical＋embedding）→ `RESULTS.md` へ。
+4. APIキーがまだ用意できないなら、コードだけで進む **RESULTS.md の枠作り**を先に。
+- 中断時の状態: `origin/main` = `d7f486e`、全変更マージ済み、未push の保留なし。

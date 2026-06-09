@@ -95,6 +95,22 @@ _作成: 2026-06-07_
     embedding 指標の優先順位明記。**運用を「push 前に ChatGPT レビュー」に変更。**
     `origin/main` = `b471e90` で本日終了。
 
+19. **embedding 指標（2026-06-09 朝）** —
+    `experiments/metrics/compute_embedding_metrics.py` を実装（意味版・cosine）。
+    `semantic_drift`(P1) / `recovery_semantic_change_vs_prior`(P2) /
+    **`residual_distance_to_baseline`(P3 本命)** / `recovery_baseline_missing`。
+    埋め込み元プラグイン（openai/google/voyage）、self-test/dry-run、キーは env のみ。
+    ChatGPT レビュー反映: 全精度保持（CSVのみ丸め）、aggregate に
+    change_vs_prior 追加、OpenAI/Voyage を index ソート。
+
+20. **CI パイプライン（2026-06-09）** —
+    `.github/workflows/ci.yml`（secrets不要: self-test・JSONL検証・metricsスモーク）と
+    `.github/workflows/stress-run.yml`（手動・secrets: runner→metrics→embedding を
+    実行し artifact 化、自動コミットはしない）を追加。ChatGPT レビュー反映:
+    shell 引数を bash 配列化、timeout 追加、artifact 名を run 固有に、on.push 簡素化。
+    これで「手元実験」→「再現可能な研究パイプライン」へ移行。
+    `origin/main` = `d7f486e` で本日終了。
+
 ## 進め方のパターン（このプロジェクトの流儀）
 
 - 作業はブランチ `claude/charming-cerf-3qhsN` で行い、PR を作ってユーザーが
