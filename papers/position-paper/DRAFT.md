@@ -191,7 +191,7 @@ We emphasize that confirming a correlation (e.g., P2) is not yet establishing ca
 
 ## 6. The Stress Testing Framework
 
-We position the Stress Testing Framework not as a benchmark but as the **experimental apparatus by which Semantic Mode Theory is tested, falsified, and refined.** Each stressor is designed to drive the system through the lifecycle of §4 and to test specific predictions from §5. For every condition we measure three quantities: **semantic robustness** (degradation under stress), **collapse threshold** (the critical point of non-linear breakdown), and **recoverability** (whether and how the system reorganizes afterward).
+We position the Stress Testing Framework not as a benchmark but as the **experimental apparatus by which Semantic Mode Theory is tested, falsified, and refined.** Each stressor is designed to drive the system through the lifecycle of §4 and to test specific predictions from §5. For every condition we measure three quantities: **semantic robustness** (degradation under stress), **collapse threshold** (the critical point of non-linear breakdown), and **recoverability** (whether and how the system reorganizes afterward). The structural-reliability framing of these — estimating `P(collapse | stress)` as a *semantic fragility curve*, with limit states and aleatory/epistemic uncertainty — is developed in [`SEMANTIC_FRAGILITY.md`](SEMANTIC_FRAGILITY.md).
 
 ### 6.1 Two levels of access: black-box and white-box
 
@@ -224,7 +224,7 @@ We close by stating the *provenance* of this research program, as an explanation
 
 This research program emerged from a trajectory across structural engineering, probabilistic and reliability thinking, complex systems, brain network science, and large language models. Concepts such as modal analysis, failure thresholds, damage-and-recovery dynamics, and reliability under uncertainty originally belonged to structural and computational systems. This paper transfers these concepts into the study of meaning, cognition, and AI safety. In this sense, Semantic Mode Theory is not merely an analogy, but an attempt to develop a **structural-reliability perspective on meaning systems** — one in which stability, distortion, collapse, and recovery are treated as first-class, measurable properties of semantic organization.
 
-We regard this cross-domain transfer as the intellectual engine of the program: the vocabulary of structural reliability supplies precisely the categories — load, threshold, failure mode, reorganization — that a science of semantic stability appears to require.
+We regard this cross-domain transfer as the intellectual engine of the program: the vocabulary of structural reliability supplies precisely the categories — load, threshold, failure mode, reorganization — that a science of semantic stability appears to require. A concrete operationalization of this lens — semantic fragility curves, limit states, and the reorganization extension that classical reliability lacks — is sketched in [`SEMANTIC_FRAGILITY.md`](SEMANTIC_FRAGILITY.md).
 
 ---
 
