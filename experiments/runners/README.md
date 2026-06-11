@@ -18,7 +18,9 @@ Python 3, standard library only (no pip install needed).
   - and network access to the provider.
 - For **`ollama`** (open-weight, free, local): a running Ollama server. **No API
   key needed.** The runner talks to `http://localhost:11434` by default; set
-  `OLLAMA_HOST` to point elsewhere (e.g. `OLLAMA_HOST=localhost:11500`).
+  `OLLAMA_HOST` to point elsewhere (URL form preferred, e.g.
+  `OLLAMA_HOST=http://localhost:11500`; a bare `host:port` is also accepted and
+  gets an `http://` prefix).
 
 ### Examples
 
@@ -60,6 +62,19 @@ python run_stress_set.py \
 > ideally a GPU). The `stress-run.yml` workflow targets hosted APIs; Ollama runs
 > are a local-execution path. Open weights also open the door to later
 > *white-box* analysis (activations/attention), beyond this black-box runner.
+
+**Record the exact open-weight model (provenance).** For publishable Ollama runs,
+save the output of `ollama list` and `ollama show <model>` alongside the run
+artifact, to record the local model tag, parameter size, quantization, template,
+and license — so "which exact model was used?" is answerable later.
+
+**Seed and reproducibility (Ollama).** Ollama can take a fixed `options.seed`
+for reproducible outputs. A `--seed` flag is a planned addition; for now, note
+the intended usage:
+- *Estimating a fragility probability* `P(collapse | stress)`: do **not** fix the
+  seed — use temperature > 0 and repeats to capture aleatory variability.
+- *Reproducing/debugging a specific output*: fix the seed.
+- *Comparing models*: use the same seed grid across models.
 
 ```bash
 # Include paraphrase variants (needed for paraphrase-consistency).

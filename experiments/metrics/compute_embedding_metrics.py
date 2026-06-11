@@ -165,14 +165,15 @@ def _ollama_base():
 
 
 def embed_ollama(texts, model):
-    # Local, key-free embeddings via Ollama; one text per call.
-    url = f"{_ollama_base()}/api/embeddings"
-    vecs = []
-    for t in texts:
-        out = _http_post(url, {"Content-Type": "application/json"},
-                         {"model": model, "prompt": t})
-        vecs.append(out["embedding"])
-    return vecs
+    # Local, key-free embeddings via Ollama's /api/embed (which supersedes the
+    # older /api/embeddings). Accepts a batch via `input` and returns the
+    # embeddings in input order.
+    out = _http_post(
+        f"{_ollama_base()}/api/embed",
+        {"Content-Type": "application/json"},
+        {"model": model, "input": list(texts)},
+    )
+    return out["embeddings"]
 
 
 EMBEDDERS = {"openai": embed_openai, "google": embed_google, "voyage": embed_voyage, "ollama": embed_ollama}

@@ -32,8 +32,19 @@ the distances the lexical script only approximates. This is where the
 
 Providers: `openai` (`OPENAI_API_KEY`), `google` (`GOOGLE_API_KEY`), `voyage`
 (`VOYAGE_API_KEY`), and **`ollama`** (open-weight, local, **no key**; honors
-`OLLAMA_HOST`, default model `nomic-embed-text`). Each has a default model,
-overridable with `--embed-model`.
+`OLLAMA_HOST`, e.g. `http://localhost:11434`; uses Ollama's `/api/embed`;
+default model `nomic-embed-text`). Each has a default model, overridable with
+`--embed-model`.
+
+Ollama embeddings quickstart (local):
+
+```bash
+ollama pull nomic-embed-text
+python compute_embedding_metrics.py \
+  --runs ../results/runs/<your-run>.jsonl \
+  --embed-provider ollama \
+  --out-prefix ../results/metrics/<your-run>
+```
 
 ```bash
 # Verify the vector math offline (no key, no network)
