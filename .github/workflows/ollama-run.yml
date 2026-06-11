@@ -118,6 +118,20 @@ jobs:
 
           echo "Artifact base name: ${base}"
 
+      - name: Echo results to the run log
+        # The artifact blob host is not always reachable for downstream analysis;
+        # printing the raw records and metrics to the job log makes results
+        # retrievable from the Actions log itself (synthetic data only, per
+        # DATA_POLICY.md). The artifact upload still happens below.
+        run: |
+          set -euo pipefail
+          echo "===== RUN_RECORDS_JSONL_BEGIN ====="
+          cat experiments/results/runs/*.jsonl
+          echo "===== RUN_RECORDS_JSONL_END ====="
+          echo "===== METRICS_JSON_BEGIN ====="
+          python experiments/metrics/compute_metrics.py --runs experiments/results/runs/*.jsonl
+          echo "===== METRICS_JSON_END ====="
+
       - name: Upload results artifact
         uses: actions/upload-artifact@v4
         with:
