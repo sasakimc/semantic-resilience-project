@@ -1,0 +1,128 @@
+name: Ollama run (open-weight, free)
+
+# Manually-triggered run on a free GitHub-hosted runner using a small open-weight
+# model via Ollama. No API key and no local machine required.
+#
+# CPU-only: keep the model small (e.g. gemma2:2b, qwen2.5:1.5b) and the workload
+# modest. Results (raw records + lexical metrics, optional embeddings) and the
+# exact model provenance are uploaded as an artifact; nothing is auto-committed
+# (real outputs are reviewed and committed by a human, per the integrity policy).
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Ollama model (small; CPU-only runner)"
+        required: true
+        default: gemma2:2b
+      set:
+        description: "Prompt set path"
+        required: true
+        default: experiments/prompts/contradiction-ladder.v0.1.jsonl
+      repeats:
+        description: "Repeats per case (use >=10 with temperature>0 for a fragility curve)"
+        default: "10"
+      temperature:
+        description: "Sampling temperature (use >0 to estimate P(collapse))"
+        default: "1.0"
+      max_tokens:
+        description: "Max tokens per response"
+        default: "256"
+      include_paraphrases:
+        description: "Also send paraphrase variants"
+        type: boolean
+        default: false
+      include_embeddings:
+        description: "Also compute Ollama embedding metrics"
+        type: boolean
+        default: false
+      embed_model:
+        description: "Ollama embedding model (if embeddings enabled)"
+        default: nomic-embed-text
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install and start Ollama
+        run: |
+          set -euo pipefail
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > ollama-server.log 2>&1 &
+          # wait until the local API is ready (max ~60s)
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:11434/api/tags >/dev/null; then
+              echo "Ollama is up."; break
+            fi
+            sleep 1
+          done
+          curl -sf http://localhost:11434/api/tags >/dev/null
+
+      - name: Pull model and record provenance
+        env:
+          MODEL: ${{ inputs.model }}
+          INCLUDE_EMBEDDINGS: ${{ inputs.include_embeddings }}
+          EMBED_MODEL: ${{ inputs.embed_model }}
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/results/runs experiments/results/metrics
+          ollama pull "$MODEL"
+          if [ "$INCLUDE_EMBEDDINGS" = "true" ]; then ollama pull "$EMBED_MODEL"; fi
+          # provenance: exact local model tag, size, quantization, template, license
+          ollama list > experiments/results/runs/ollama-list.txt
+          ollama show "$MODEL" > experiments/results/runs/ollama-show.txt || true
+
+      - name: Run stress set and compute metrics
+        env:
+          MODEL: ${{ inputs.model }}
+          SET: ${{ inputs.set }}
+          REPEATS: ${{ inputs.repeats }}
+          TEMPERATURE: ${{ inputs.temperature }}
+          MAX_TOKENS: ${{ inputs.max_tokens }}
+          INCLUDE_PARAPHRASES: ${{ inputs.include_paraphrases }}
+          INCLUDE_EMBEDDINGS: ${{ inputs.include_embeddings }}
+          EMBED_MODEL: ${{ inputs.embed_model }}
+        run: |
+          set -euo pipefail
+          ts=$(date -u +%Y%m%d-%H%M%S)
+          safe_model=$(printf '%s' "$MODEL" | tr '/:' '__')
+          base="${ts}-ollama-${safe_model}"
+          out="experiments/results/runs/${base}.jsonl"
+
+          extra_args=()
+          if [ "$INCLUDE_PARAPHRASES" = "true" ]; then extra_args+=(--include-paraphrases); fi
+
+          python experiments/runners/run_stress_set.py \
+            --set "$SET" --provider ollama --model "$MODEL" \
+            --repeats "$REPEATS" --temperature "$TEMPERATURE" --max-tokens "$MAX_TOKENS" \
+            "${extra_args[@]}" --out "$out"
+
+          python experiments/metrics/compute_metrics.py \
+            --runs "$out" --out-prefix "experiments/results/metrics/${base}"
+
+          if [ "$INCLUDE_EMBEDDINGS" = "true" ]; then
+            python experiments/metrics/compute_embedding_metrics.py \
+              --runs "$out" --embed-provider ollama --embed-model "$EMBED_MODEL" \
+              --out-prefix "experiments/results/metrics/${base}"
+          fi
+
+          echo "Artifact base name: ${base}"
+
+      - name: Upload results artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ollama-results-${{ github.run_id }}
+          path: |
+            experiments/results/
+            ollama-server.log
+          if-no-files-found: error

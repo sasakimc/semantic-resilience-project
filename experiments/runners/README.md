@@ -63,6 +63,12 @@ python run_stress_set.py \
 > are a local-execution path. Open weights also open the door to later
 > *white-box* analysis (activations/attention), beyond this black-box runner.
 
+> **No-PC option:** `.github/workflows/ollama-run.yml` runs a **small** Ollama
+> model on a free GitHub-hosted (CPU-only) runner — no API key, no local machine.
+> Trigger it from the Actions tab (`workflow_dispatch`), keep the model small
+> (e.g. `gemma2:2b`, `qwen2.5:1.5b`), and download the results artifact. It is
+> slower than local/GPU and not for large models.
+
 **Record the exact open-weight model (provenance).** For publishable Ollama runs,
 save the output of `ollama list` and `ollama show <model>` alongside the run
 artifact, to record the local model tag, parameter size, quantization, template,
