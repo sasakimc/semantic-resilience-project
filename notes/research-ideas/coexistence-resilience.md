@@ -166,3 +166,7 @@ reliability — the kind of cross-domain transfer that is this program's engine.
 Preliminary and provisional. Functional claims only; welfare is out of scope.
 Limit states must be operationalized before any fragility/fatigue estimate is
 meaningful. Correlation between stress and a metric is not causation.
+
+**Data policy.** Any coexistence/caregiving stressor set must be **fully
+synthetic** — never derived from a real person, patient, or family, and never
+containing real personal or clinical data. See [`../../DATA_POLICY.md`](../../DATA_POLICY.md).

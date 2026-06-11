@@ -15,6 +15,8 @@ not conclusions**.
 3. **Metrics are computed separately and offline** from the raw records, and
    are operational proxies, not direct measurements of meaning (see the
    [Metrics Appendix](../../papers/position-paper/METRICS_APPENDIX.md)).
+4. **Synthetic-only inputs; no real personal or patient data.** Runs use only the
+   synthetic prompts in this repository. See [`DATA_POLICY.md`](../../DATA_POLICY.md).
 
 ## Layout
 

@@ -213,6 +213,10 @@ In the future, the following forms of participation and collaboration are welcom
 
 Code is licensed under the MIT License. Documentation, research text, prompt sets, and experimental materials are licensed under CC BY 4.0 unless otherwise noted. See [`LICENSING.md`](LICENSING.md) for details.
 
+## Data policy
+
+All stimuli are **synthetic or abstract**; **no real personal or patient data** is used or accepted anywhere in this repository or its runs. See [`DATA_POLICY.md`](DATA_POLICY.md).
+
 ---
 
 This research program aims to integrate neuroscience, cognitive science, computational science, and AI safety research toward a general theory of the formation, distortion, collapse, and recovery of meaning. It is not a completed theory, but a starting point for future theorization, experimentation, validation, and collaboration.
