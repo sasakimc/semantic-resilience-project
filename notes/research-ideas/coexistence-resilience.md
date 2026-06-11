@@ -7,6 +7,13 @@
 idea, framed to be testable; an application/extension of Semantic Mode Theory.
 We *propose* and *hypothesize* throughout.
 
+## Why this matters
+
+Future household and caregiving AI systems may engage in **millions of
+emotionally charged interactions** over their operational lifetime. Safety
+therefore requires not only preventing harm to humans, but also maintaining the
+system's own **semantic stability under prolonged interaction stress**.
+
 ## The question (stated functionally)
 
 Most AI-safety work studies how to prevent AI systems from harming humans
@@ -71,6 +78,19 @@ with sustained, affect-laden, relational stressors, e.g.:
 - hostility and testing
 - prolonged silence / withdrawal
 - grief, illness, aging, bereavement, caregiver fatigue
+
+### Semantic homeostasis (the capacity being stressed)
+
+The goal is not an *unbreakable* system but a **homeostatic** one: by analogy
+with biological systems, the capacity to **maintain a stable behavioral identity
+despite continuous perturbation** — to *absorb* fluctuation rather than to never
+fluctuate. This reframes the program's lifecycle: alongside formation →
+distortion → collapse → recovery sits an ordinary, healthy regime of
+**bounded fluctuation around a stable identity**. The limit states below are then
+the points at which homeostasis fails — where perturbation is no longer absorbed.
+*Candidate observable:* fluctuations that stay within a bounded envelope and
+return toward it (homeostasis) vs. fluctuations that ratchet/accumulate without
+return (the fatigue path).
 
 ### Candidate coexistence limit states
 
