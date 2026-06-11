@@ -149,3 +149,12 @@ to remain a measurable distance from baseline rather than returning to it.
 - Correlation between a stress level and a metric is not causation.
 - Lexical/structural proxies are surface measures; the semantic (embedding) and
   judge-based limit-state criteria are the goal.
+
+## Related direction
+
+This note covers **single-shock** fragility (`P(collapse | stress)`). A
+complementary **fatigue** view — failure from the *accumulation* of many small
+stresses over a long interaction — is sketched in
+[`../../notes/research-ideas/coexistence-resilience.md`](../../notes/research-ideas/coexistence-resilience.md),
+which applies the framework to semantic stability under sustained
+human-interaction stress.
