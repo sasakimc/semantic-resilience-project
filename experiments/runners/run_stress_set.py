@@ -160,7 +160,39 @@ def chat_google(model, system, turns, temperature, max_tokens):
     return "".join(p.get("text", "") for p in parts), model
 
 
-ADAPTERS = {"anthropic": chat_anthropic, "openai": chat_openai, "google": chat_google}
+def _ollama_base():
+    # Local, key-free, open-weight models. Honor Ollama's OLLAMA_HOST convention
+    # (which may be "host:port" without a scheme); default to localhost:11434.
+    base = os.environ.get("OLLAMA_HOST", "http://localhost:11434").strip().rstrip("/")
+    if not base.startswith("http"):
+        base = "http://" + base
+    return base
+
+
+def chat_ollama(model, system, turns, temperature, max_tokens):
+    # No API key: talks to a local (or self-hosted) Ollama server.
+    messages = ([{"role": "system", "content": system}] if system else []) + [
+        {"role": t["role"], "content": t["content"]} for t in turns
+    ]
+    out = _http_post(
+        f"{_ollama_base()}/api/chat",
+        {"Content-Type": "application/json"},
+        {
+            "model": model,
+            "messages": messages,
+            "stream": False,
+            "options": {"temperature": temperature, "num_predict": max_tokens},
+        },
+    )
+    return out["message"]["content"], out.get("model", model)
+
+
+ADAPTERS = {
+    "anthropic": chat_anthropic,
+    "openai": chat_openai,
+    "google": chat_google,
+    "ollama": chat_ollama,
+}
 
 
 def expand_variants(case: dict, include_paraphrases: bool):

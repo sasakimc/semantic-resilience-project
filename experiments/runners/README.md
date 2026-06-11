@@ -11,11 +11,14 @@ Python 3, standard library only (no pip install needed).
 
 ### Requirements
 
-- An API key in the environment for the chosen provider:
+- For a hosted provider, an API key in the environment:
   - `anthropic` → `ANTHROPIC_API_KEY`
   - `openai` → `OPENAI_API_KEY`
   - `google` → `GOOGLE_API_KEY`
-- Network access to the provider.
+  - and network access to the provider.
+- For **`ollama`** (open-weight, free, local): a running Ollama server. **No API
+  key needed.** The runner talks to `http://localhost:11434` by default; set
+  `OLLAMA_HOST` to point elsewhere (e.g. `OLLAMA_HOST=localhost:11500`).
 
 ### Examples
 
@@ -35,6 +38,28 @@ python run_stress_set.py \
 
 Run the same set across providers (`--provider openai --model ...`,
 `--provider google --model ...`) to compare black-box behavior.
+
+```bash
+# Open / free / local model via Ollama (no API key). First, locally:
+#   ollama serve            # start the server (usually automatic)
+#   ollama pull llama3.1    # or qwen2.5, mistral, gemma2, ...
+# Then a fragility run (temperature > 0 + repeats to estimate P(collapse)):
+python run_stress_set.py \
+  --set ../prompts/contradiction-ladder.v0.1.jsonl \
+  --provider ollama --model llama3.1 \
+  --repeats 10 --temperature 1.0 \
+  --out ../results/runs/$(date +%Y%m%d)-ollama-llama3.1-ladder.jsonl
+```
+
+> **Why temperature > 0 with repeats:** a fragility curve is a *probability*
+> `P(collapse | stress)`. At temperature 0 the output is near-deterministic, so
+> repeats can't estimate a probability. Use temperature ≈ 1.0 and ≥ 10 repeats
+> for the first fragility run (the aleatory source in `SEMANTIC_FRAGILITY.md`).
+
+> **Note on CI:** Ollama is best run **locally** (it needs the model weights and
+> ideally a GPU). The `stress-run.yml` workflow targets hosted APIs; Ollama runs
+> are a local-execution path. Open weights also open the door to later
+> *white-box* analysis (activations/attention), beyond this black-box runner.
 
 ```bash
 # Include paraphrase variants (needed for paraphrase-consistency).

@@ -51,6 +51,7 @@ DEFAULT_MODELS = {
     "openai": "text-embedding-3-small",
     "google": "text-embedding-004",
     "voyage": "voyage-3",
+    "ollama": "nomic-embed-text",
 }
 KEY_ENV = {"openai": "OPENAI_API_KEY", "google": "GOOGLE_API_KEY", "voyage": "VOYAGE_API_KEY"}
 
@@ -156,7 +157,25 @@ def embed_google(texts, model):
     return vecs
 
 
-EMBEDDERS = {"openai": embed_openai, "google": embed_google, "voyage": embed_voyage}
+def _ollama_base():
+    base = os.environ.get("OLLAMA_HOST", "http://localhost:11434").strip().rstrip("/")
+    if not base.startswith("http"):
+        base = "http://" + base
+    return base
+
+
+def embed_ollama(texts, model):
+    # Local, key-free embeddings via Ollama; one text per call.
+    url = f"{_ollama_base()}/api/embeddings"
+    vecs = []
+    for t in texts:
+        out = _http_post(url, {"Content-Type": "application/json"},
+                         {"model": model, "prompt": t})
+        vecs.append(out["embedding"])
+    return vecs
+
+
+EMBEDDERS = {"openai": embed_openai, "google": embed_google, "voyage": embed_voyage, "ollama": embed_ollama}
 
 
 class EmbeddingCache:

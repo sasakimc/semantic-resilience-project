@@ -30,8 +30,9 @@ pluggable provider and computes cosine-based metrics — the proper version of
 the distances the lexical script only approximates. This is where the
 **primary P3 signal** lives.
 
-Providers (API key from env): `openai` (`OPENAI_API_KEY`), `google`
-(`GOOGLE_API_KEY`), `voyage` (`VOYAGE_API_KEY`). Each has a default model,
+Providers: `openai` (`OPENAI_API_KEY`), `google` (`GOOGLE_API_KEY`), `voyage`
+(`VOYAGE_API_KEY`), and **`ollama`** (open-weight, local, **no key**; honors
+`OLLAMA_HOST`, default model `nomic-embed-text`). Each has a default model,
 overridable with `--embed-model`.
 
 ```bash
