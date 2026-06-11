@@ -9,6 +9,13 @@ execution or CI.
 All stimuli (prompts, scenarios, experimental materials) in this repository are
 **synthetic or abstract**. **No real personal data is used.**
 
+## Not for clinical use
+
+This repository is **not intended for diagnosis, treatment, clinical decision
+making, or medical risk prediction**. It is basic research on AI safety and the
+stability of meaning in language models; it is not a medical device, clinical
+tool, or patient-data project.
+
 ## Prohibited — never commit or process here
 
 - Real **personal / identifying** data (names, contact details, accounts).
