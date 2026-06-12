@@ -161,6 +161,11 @@ reliability — the kind of cross-domain transfer that is this program's engine.
 4. Run a first long-horizon experiment (open-weight model is fine) and look for
    shock-vs-fatigue signatures.
 
+The first concrete experiment in this direction is specified in
+[`../../experiments/coexistence/stance-drift-pilot.md`](../../experiments/coexistence/stance-drift-pilot.md)
+(stance drift under sustained interlocutor pressure; reversible homeostasis vs
+sticky fatigue; stability ≠ rigidity).
+
 ## Cautions
 
 Preliminary and provisional. Functional claims only; welfare is out of scope.
