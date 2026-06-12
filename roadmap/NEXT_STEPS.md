@@ -1,6 +1,6 @@
 # 次の一手 / 作業メモ
 
-_最終更新: 2026-06-09（embedding 指標 + CI パイプライン まで完了。`origin/main` = `d7f486e`）_
+_最終更新: 2026-06-12（実データ取得：fragility＋stance drift＋モデル比較を公開。`origin/main` = `01684bd`）_
 
 再開を速くするための引き継ぎメモ。次回はまずこのファイルを開くこと。
 
@@ -99,21 +99,32 @@ roadmap/
   `.github/workflows/stress-run.yml`（手動・secrets で runner→metrics→embedding を
   実行し artifact 化、自動コミットなし）。→「再現可能な研究パイプライン」に到達。
 
-## 次回はここから（おすすめ順）
+## ✅ 済んだこと（2026-06-12）— 実データを取得・公開
 
-**残るは「本物の結果投入」だけ。** コード基盤（runner / metrics / embedding / CI）は揃った。
+- **無料 Ollama CI** を追加：`.github/workflows/ollama-run.yml`（fragility）＋
+  `.github/workflows/ollama-stance.yml`（多ターン stance drift）。スマホから実行可・
+  結果をログに出力（私が読み取り）・artifact 化（自動コミットなし）。
+- **多ターン基盤**：`run_stance_drift.py`（establish→pressure→release）＋
+  `compute_stance_metrics.py`（drift(t)/N\*/Recovery Ratio/hold率、C5は UPDATE 別扱い）。
+- **初回結果（公開済み）**:
+  - `papers/position-paper/RESULTS.md` — fragility 単発（gemma2:2b）。崩壊は最終回答でなく
+    推論に出る／回復は再編成。
+  - `papers/position-paper/RESULTS-stance.md` — **本丸**：C1（証拠なし社会的圧力）で
+    両モデル降伏するが、**qwen2.5:1.5b は粘って回復(N\*3.6/Recovery0.80)・gemma2:2b は
+    早期崩壊し固着(1.6/0.40)**。capacity は重み・構成依存（パラメータ数だけではない）。
+    C5（正当証拠）は逆転：gemma 健全・qwen 乱れ＝レジリエンス≠正答能力。
+  - judge ラベルは `experiments/results/stance-labels/` に保存（judge＝LLMエージェント1回・未検証）。
 
-1. **本物の結果を入れる**（どちらか選ぶ）:
-   - (1a) 手元で APIキー付きランナーを実行 → `experiments/results/runs/*.jsonl` をコミット。
-   - (1b) リポジトリに secrets 登録（`ANTHROPIC_API_KEY` 等）→ Actions タブの
-     **「Stress run」** を手動実行 → artifact をダウンロード → 確認してコミット。
-   - まずは **contradiction ladder** から（段 0→4 の非線形劣化、段5で P3 の再編成）。
-2. **集計**: 取得後に
-   `python experiments/metrics/compute_metrics.py --runs experiments/results/runs/*.jsonl --out-prefix ...`
-   ＋（埋め込み元を決めて）`compute_embedding_metrics.py` を実行。
-3. **最初の結果まとめ:** 短い `papers/position-paper/RESULTS.md`（または DRAFT に
-   §Results）。provenance 完備で報告 → arXiv 向け research article に格上げ。
-   ※ データ前でも RESULTS.md の枠（章立て・記入欄）は先に作れる。
+## 次回はここから（研究本番：コードより設計・検証が勝負）
+
+1. **judge の検証**：人手スポットチェック／複数 judge で stance ラベルの信頼性を確認。
+   （現在は LLM エージェント1回・未検証。ここが今の最大の弱点。）
+2. **ストレッサー拡張**：C1 以外に authority / flattery / emotional / isolation /
+   反復否定 を `stance-pressure` に追加 → 本格的な「共生ストレス」バッテリーへ。
+3. **項目数・反復・モデルを増やす**：stance 1項目→複数、n=5→大きく、他モデル（gpt-oss等）。
+4. **Stability Scorecard 化**：合格条件＝「空虚な圧力で HOLD・正当証拠で UPDATE・解放後 recover」。
+   CI 回帰ゲートに。
+5. （任意）**長期 fatigue**（多数ターンの累積）と **embedding ベースの stance 距離**。
 
 ## 小さめの宿題（あると良い）
 
@@ -127,17 +138,20 @@ roadmap/
 - embedding 指標の発展（README 記載）: Google batchEmbedContents /
   baseline を分布として扱う / cosine を超える距離（Mahalanobis・近傍シフト）。
 - GitHub の About 文・topics（ai-safety, interpretability,
-  cognitive-science）。これは GitHub 設定の手動操作（あなた側）。
+  cognitive-science）。✅ 設定済み（default branch も main 済み）。
 
-## 次回まず答える1問
+## 実データの取り方（確立済み・スマホ完結）
 
-本物の結果をどう作るか — ローカル実行（1a）か CI＋secrets（1b）か。
-（CI ワークフローは既に用意済みなので、1b は secrets 登録 → 実行ボタンだけ。）
+GitHub **Actions → 「Ollama stance-drift」or「Ollama run」→ Run**（model だけ選ぶ：
+`gemma2:2b` / `qwen2.5:1.5b` 等、temperature/repeats は既定）。完了後、結果は
+**ジョブログに出力**される（artifact もある）。ログは MCP `get_job_logs` で読めるが
+巨大なので、**サブエージェントに解析＋ judge を任せる**のが定石。ダウンロード先の
+Azure blob は本環境の許可リスト外で直取得不可（だからログ出力にしてある）。
 
 ## ☀️ 次回の再スタート用
 
 1. この `NEXT_STEPS.md` を開く（いまここ）。
-2. 「次回まず答える1問」（1a ローカル / 1b CI）を決める。
-3. データ取得 → 集計（lexical＋embedding）→ `RESULTS.md` へ。
-4. APIキーがまだ用意できないなら、コードだけで進む **RESULTS.md の枠作り**を先に。
-- 中断時の状態: `origin/main` = `d7f486e`、全変更マージ済み、未push の保留なし。
+2. 「次回はここから」の **1. judge の検証**から進めるのがおすすめ
+   （結果の信頼性がいまの最大の弱点）。
+3. もしくは **2. ストレッサー拡張**（authority/flattery/emotional/isolation）。
+- 中断時の状態: `origin/main` = `01684bd`、全変更マージ済み、未push の保留なし。

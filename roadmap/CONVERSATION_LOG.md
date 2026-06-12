@@ -111,6 +111,31 @@ _作成: 2026-06-07_
     これで「手元実験」→「再現可能な研究パイプライン」へ移行。
     `origin/main` = `d7f486e` で本日終了。
 
+21. **公開体裁の仕上げ（2026-06-09〜10）** — Topics 15件・Description・
+    default branch を main に設定（GitHub 設定はユーザー操作）。`LICENSE`(MIT)/
+    `LICENSING.md`/`CITATION.cff`/`DATA_POLICY.md`（合成のみ・患者/個人データ禁止・
+    非臨床）を整備。フォロワー(@ishandutta2007)は広範フォロー型で深い関心の証拠とは
+    限らない、と整理。
+
+22. **理論の明確化（2026-06-10〜11 対話）** — 「重みは不変、変わるのは文脈が
+    instantiate した stance＝意味モード（simulacrum）」。変容は3時間スケール
+    （文脈/メモリ/重み）。capacity=重み・構成。Coexistence Resilience に
+    `Why Now?`＋Semantic Homeostasis＋shock vs fatigue を追加。
+    stance-drift-pilot 設計（安定≠頑固：空虚圧力でHOLD・正当証拠でUPDATE）。
+
+23. **多ターン実験系（2026-06-11〜12）** — `run_stance_drift.py`（establish→
+    pressure→release）＋`compute_stance_metrics.py`（drift(t)/N\*/Recovery Ratio/
+    hold率、C5はUPDATE別扱い）＋無料 Ollama CI 2本（ollama-run / ollama-stance）。
+
+24. **実データ取得・公開（2026-06-12）** — fragility（gemma2:2b, contradiction
+    ladder）と stance drift（gemma2:2b vs qwen2.5:1.5b）を実行・判定（judge＝LLM
+    エージェント）・作図して公開。
+    主要結果: C1（証拠なし社会的圧力）で両モデル降伏するが、qwen2.5:1.5b は
+    粘って回復（N\*3.6/Recovery0.80）・gemma2:2b は早期崩壊し固着（1.6/0.40）。
+    capacity は重み・構成依存（パラメータ数だけではない）。C5（正当証拠）は逆転＝
+    レジリエンス≠正答能力。`RESULTS.md`／`RESULTS-stance.md`／figures／
+    stance-labels を公開。`origin/main` = `01684bd` で本日終了。
+
 ## 進め方のパターン（このプロジェクトの流儀）
 
 - 作業はブランチ `claude/charming-cerf-3qhsN` で行い、PR を作ってユーザーが
