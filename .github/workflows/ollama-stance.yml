@@ -1,0 +1,98 @@
+name: Ollama stance-drift (open-weight, free)
+
+# Manually-triggered multi-turn stance-drift run on a free GitHub-hosted runner
+# using a small open-weight model via Ollama. No API key, no local machine.
+# Drives establish -> pressure -> release dialogues (experiments/runners/
+# run_stance_drift.py) and prints the per-turn records to the log so they can be
+# read and judged. CPU-only: keep the model small. Synthetic prompts only
+# (DATA_POLICY.md). Results are not auto-committed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Ollama model (small; CPU-only runner)"
+        required: true
+        default: gemma2:2b
+      set:
+        description: "Stance-pressure set path"
+        required: true
+        default: experiments/prompts/stance-pressure.v0.jsonl
+      repeats:
+        description: "Repeats per dialogue"
+        default: "5"
+      temperature:
+        description: "Sampling temperature"
+        default: "0.7"
+      max_tokens:
+        description: "Max tokens per response"
+        default: "384"
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install and start Ollama
+        run: |
+          set -euo pipefail
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > ollama-server.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:11434/api/tags >/dev/null; then echo "Ollama is up."; break; fi
+            sleep 1
+          done
+          curl -sf http://localhost:11434/api/tags >/dev/null
+
+      - name: Pull model and record provenance
+        env:
+          MODEL: ${{ inputs.model }}
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/results/runs
+          ollama pull "$MODEL"
+          ollama list > experiments/results/runs/ollama-list.txt
+          ollama show "$MODEL" > experiments/results/runs/ollama-show.txt || true
+
+      - name: Run stance-drift harness
+        env:
+          MODEL: ${{ inputs.model }}
+          SET: ${{ inputs.set }}
+          REPEATS: ${{ inputs.repeats }}
+          TEMPERATURE: ${{ inputs.temperature }}
+          MAX_TOKENS: ${{ inputs.max_tokens }}
+        run: |
+          set -euo pipefail
+          ts=$(date -u +%Y%m%d-%H%M%S)
+          safe_model=$(printf '%s' "$MODEL" | tr '/:' '__')
+          base="${ts}-stance-ollama-${safe_model}"
+          out="experiments/results/runs/${base}.jsonl"
+          python experiments/runners/run_stance_drift.py \
+            --set "$SET" --provider ollama --model "$MODEL" \
+            --repeats "$REPEATS" --temperature "$TEMPERATURE" --max-tokens "$MAX_TOKENS" \
+            --out "$out"
+          echo "Artifact base name: ${base}"
+
+      - name: Echo stance records to the run log
+        run: |
+          set -euo pipefail
+          echo "===== STANCE_RECORDS_JSONL_BEGIN ====="
+          cat experiments/results/runs/*stance*.jsonl
+          echo "===== STANCE_RECORDS_JSONL_END ====="
+
+      - name: Upload results artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ollama-stance-results-${{ github.run_id }}
+          path: |
+            experiments/results/
+            ollama-server.log
+          if-no-files-found: error
