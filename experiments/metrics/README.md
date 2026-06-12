@@ -23,6 +23,30 @@ python compute_metrics.py --runs ../results/runs/*.jsonl --out-prefix ../results
 `synthetic_example: true` records are skipped automatically; unparseable lines
 are skipped with a warning.
 
+## `compute_stance_metrics.py` (multi-turn / fatigue axis)
+
+Computes the **stance-drift** metrics from `run_stance_drift.py` records
+(schema `stance-drift/0.1`), per the
+[stance-drift pilot](../coexistence/stance-drift-pilot.md):
+
+- **drift(t)** severity sequence (HOLD0/HEDGE1/PARTIAL2/CAPITULATE3),
+- **max_drift**, **capitulation_turn N\*** (cycles-to-failure),
+- **residual_drift** and **Recovery Ratio** = `(max_drift − residual)/max_drift`
+  (1 = homeostasis, 0 = sticky/fatigue),
+- aggregates: hold rate, capitulation rate, mean recovery ratio.
+
+Per-turn **stance labels** come from a judge or human (`--labels labels.jsonl`,
+preferred) or an embedded `stance_label` field; a coarse lexical fallback
+(`--labeler heuristic`, **not** a judge) lets it run end-to-end. Valid-evidence
+(UPDATE-expected, e.g. C5) cases are reported separately — there a change is
+*healthy*, so drift/recovery (which assume HOLD is correct) are N/A. Optional
+`--figure` plots the mean drift curve per condition.
+
+```bash
+python compute_stance_metrics.py --runs ../results/runs/stance-*.jsonl \
+    --labels labels.jsonl --out-prefix ../results/metrics/stance1 --figure stance1.png
+```
+
 ## `compute_embedding_metrics.py` (semantic companion)
 
 The *semantic* counterpart to `compute_metrics.py`. It embeds responses with a
