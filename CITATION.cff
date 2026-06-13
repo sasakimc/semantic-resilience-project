@@ -1,18 +1,19 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
-title: "Semantic Mode Theory"
+title: "Semantic Resilience Project"
 abstract: >-
   A preliminary research program studying how meaning is formed, distorted,
   collapses, and recovers in brains and in large language models, treated as a
-  dynamic mode structure. It pairs an explanatory pillar (Semantic Mode Theory)
-  with an empirical pillar (a stress-testing framework) connected by a
-  prediction-observation loop. Working hypotheses, not peer-reviewed results.
+  dynamic mode structure. It pairs an explanatory pillar (the core theory,
+  Semantic Mode Theory) with an empirical pillar (the Semantic Resilience
+  Framework, a stress-testing methodology) connected by a prediction-observation
+  loop. Working hypotheses, not peer-reviewed results.
 type: software
 authors:
   - name: "sasakimc"
     alias: "sasakimc"
-repository-code: "https://github.com/sasakimc/llm_testing_research"
-url: "https://github.com/sasakimc/llm_testing_research"
+repository-code: "https://github.com/sasakimc/semantic-resilience-project"
+url: "https://github.com/sasakimc/semantic-resilience-project"
 license: "MIT AND CC-BY-4.0"
 version: "0.1.0"
 date-released: "2026-06-08"

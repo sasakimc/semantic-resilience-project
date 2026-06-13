@@ -72,7 +72,7 @@ State concrete, testable predictions the theory commits to *before* observation.
 
 Each prediction is paired with a way it could be *wrong* (the falsifier). *Future extension (see §10):* whether mode-level instability metrics predict downstream failure **earlier/better** than output-level metrics alone is a stronger claim to be added once the base predictions hold.
 
-## 6. The Stress Testing Framework (Empirical Pillar)
+## 6. The Semantic Resilience Framework (Empirical Pillar)
 
 Describe the methodology that produces the observations. Define the stressors — contradiction, ambiguity, multiple constraints, value conflict, long context, cognitive load — and the three core measurements: **semantic robustness**, **collapse threshold**, and **recoverability**. Specify how each stressor maps to a prediction in §5, so the framework is not "yet another benchmark" but a theory-driven instrument.
 

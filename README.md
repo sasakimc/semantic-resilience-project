@@ -1,8 +1,10 @@
-# Semantic Mode Theory
+# Semantic Resilience Project
 
 *English ・ [日本語](README.ja.md)*
 
 **Exploring the principles of how meaning is formed, distorted, collapses, and recovers — in brains and in AI.**
+
+*Core theory: **Semantic Mode Theory** · Empirical framework: **Semantic Resilience Framework**.*
 
 ---
 
@@ -33,7 +35,7 @@ Meaning → Distortion → Collapse → Recovery
 The program advances on two complementary fronts:
 
 1. **Semantic Mode Theory** — the *explanatory* pillar. What meaning is, how it forms, and how its structure can destabilize, collapse, and reorganize.
-2. **Stress Testing Framework** — the *empirical* pillar. A methodology for probing the limits of meaning systems: subjecting LLMs to contradiction, ambiguity, multiple constraints, value conflict, long context, and cognitive load, and measuring semantic robustness, collapse thresholds, and recoverability.
+2. **Semantic Resilience Framework** — the *empirical* pillar (the stress-testing methodology). A methodology for probing the limits of meaning systems: subjecting LLMs to contradiction, ambiguity, multiple constraints, value conflict, long context, and cognitive load, and measuring semantic robustness, collapse thresholds, and recoverability.
 
 The theory makes the framework interpretable; the framework makes the theory testable.
 

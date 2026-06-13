@@ -10,7 +10,7 @@ _作成: 2026-06-07_
 
 ## このセッションでやったこと（時系列）
 
-1. **リポジトリ確認** — `sasakimc/llm_testing_research` は作成直後で空だった。
+1. **リポジトリ確認** — `sasakimc/semantic-resilience-project`（作成時の旧名 `llm_testing_research`）は作成直後で空だった。
    アクセス可能なことを確認。
 
 2. **権限の解決** — 最初プッシュが 403 で失敗。原因は Claude が GitHub に

@@ -1,8 +1,10 @@
-# Semantic Mode Theory
+# Semantic Resilience Project
 
 *[English](README.md) ・ 日本語*
 
 **脳とAIに共通する「意味の形成・歪み・崩壊・回復」の原理を探究する**
+
+*中核理論: **Semantic Mode Theory** ／ 実証フレームワーク: **Semantic Resilience Framework**。*
 
 ---
 
@@ -34,7 +36,7 @@ Meaning → Distortion → Collapse → Recovery
 本プログラムは、相補的な二本の柱で前進する。
 
 1. **Semantic Mode Theory** — *説明（explanatory）* の柱。意味とは何か、どのように形成され、その構造がどのように不安定化・崩壊・再構成しうるのか。
-2. **Stress Testing Framework** — *実証（empirical）* の柱。意味システムの限界を探る方法論。LLMに矛盾、曖昧性、多重制約、価値葛藤、長文脈、認知的負荷を与え、意味耐性・崩壊閾値・回復可能性を測定する。
+2. **Semantic Resilience Framework** — *実証（empirical）* の柱（ストレステスト手法）。意味システムの限界を探る方法論。LLMに矛盾、曖昧性、多重制約、価値葛藤、長文脈、認知的負荷を与え、意味耐性・崩壊閾値・回復可能性を測定する。
 
 理論が枠組みを解釈可能にし、枠組みが理論を検証可能にする。
 

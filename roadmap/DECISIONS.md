@@ -19,7 +19,7 @@ _作成: 2026-06-07_
 
 ## D2. 二本柱で構成する
 
-- **判断:** Semantic Mode Theory（説明）と Stress Testing Framework（実証）の
+- **判断:** Semantic Mode Theory（説明）と Semantic Resilience Framework（実証）の
   二本柱にする。
 - **理由:** 理論だけだと「面白いが検証可能か？」、ストレステストだけだと
   「新しいベンチか？」で終わる。両者を `Theory→Prediction→Stress Testing→

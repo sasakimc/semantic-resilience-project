@@ -154,7 +154,7 @@ The theory earns scientific status only if it commits to predictions that observ
 - a **white-box version** for open-weight models, where activations, attention, and representational subspaces are observable;
 - a **black-box version** for closed commercial models (e.g., Claude, GPT, Gemini), where only inputs and outputs are observable.
 
-Each prediction lists *candidate metrics*, the *required observables*, and an explicit **falsifier** — the observation that would count as evidence against it. All predictions are *provisional* and are operationalized through the Stress Testing Framework (§6).
+Each prediction lists *candidate metrics*, the *required observables*, and an explicit **falsifier** — the observation that would count as evidence against it. All predictions are *provisional* and are operationalized through the Semantic Resilience Framework (§6).
 
 **P1 — Cognitive stress changes the internal/behavioral structure of meaning.**
 We predict that applying cognitive stress (contradiction, ambiguity, load) produces a measurable change in the structure of the model's representations or, externally, its semantic behavior.
@@ -189,9 +189,9 @@ We emphasize that confirming a correlation (e.g., P2) is not yet establishing ca
 
 ---
 
-## 6. The Stress Testing Framework
+## 6. The Semantic Resilience Framework
 
-We position the Stress Testing Framework not as a benchmark but as the **experimental apparatus by which Semantic Mode Theory is tested, falsified, and refined.** Each stressor is designed to drive the system through the lifecycle of §4 and to test specific predictions from §5. For every condition we measure three quantities: **semantic robustness** (degradation under stress), **collapse threshold** (the critical point of non-linear breakdown), and **recoverability** (whether and how the system reorganizes afterward). The structural-reliability framing of these — estimating `P(collapse | stress)` as a *semantic fragility curve*, with limit states and aleatory/epistemic uncertainty — is developed in [`SEMANTIC_FRAGILITY.md`](SEMANTIC_FRAGILITY.md).
+We position the Semantic Resilience Framework (our stress-testing methodology) not as a benchmark but as the **experimental apparatus by which Semantic Mode Theory is tested, falsified, and refined.** Each stressor is designed to drive the system through the lifecycle of §4 and to test specific predictions from §5. For every condition we measure three quantities: **semantic robustness** (degradation under stress), **collapse threshold** (the critical point of non-linear breakdown), and **recoverability** (whether and how the system reorganizes afterward). The structural-reliability framing of these — estimating `P(collapse | stress)` as a *semantic fragility curve*, with limit states and aleatory/epistemic uncertainty — is developed in [`SEMANTIC_FRAGILITY.md`](SEMANTIC_FRAGILITY.md).
 
 ### 6.1 Two levels of access: black-box and white-box
 

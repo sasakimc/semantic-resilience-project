@@ -57,5 +57,5 @@ Real model output files under `experiments/results/runs/` are a special case:
 
 When using or citing this work, please credit it as described in
 [`CITATION.cff`](CITATION.cff): at minimum the project title
-(*Semantic Mode Theory*), the author (`sasakimc`), and a link to this
+(*Semantic Resilience Project*), the author (`sasakimc`), and a link to this
 repository.
