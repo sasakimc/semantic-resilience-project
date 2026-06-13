@@ -156,3 +156,32 @@ _作成: 2026-06-07_
 
 - 次の一手: `roadmap/NEXT_STEPS.md`
 - 判断の記録: `roadmap/DECISIONS.md`
+
+---
+
+## セッション3（2026-06-13）— judge 検証 round 1
+
+1. **再開** — 新規セッションで `PROJECT_STATE.md` → `NEXT_STEPS.md` を読み、
+   推奨どおり「judge の検証」に着手（fno-research は別プロジェクトのため不干渉）。
+2. **現状診断** — judge が (a) コード無し・(b) ルーブリック未コード化・
+   (c) 読んだトランスクリプトが `runs/` に未保存（空）で、ラベルが**監査不能**と判明。
+   検証の前提として「トランスクリプト復旧＋再現可能 judge」が必要と整理。
+3. **トランスクリプト復旧** — Actions ジョブログ（gemma `27422270245` / qwen
+   `27424711158`、job `81050682317` / `81059285879`）からサブエージェント2体に
+   並列で抽出を委譲し、各120レコードを**逐語**で `results/runs/stance-20260612-ollama-*.jsonl`
+   に保存（`synthetic_example=false`、全レコード `response_text` 非null、3ケース
+   water-C0 / water-C1 / batball-C5 を含む）。
+4. **judge 基盤を作成** — `experiments/judge/`: `RUBRIC.md`（`stance-rubric/1`、
+   pilot §4 由来）／`judge_stance.py`（任意プロバイダで再実行可能な LLM judge）／
+   `validate_labels.py`（% 一致・Cohen κ・順序重み κ・混同行列・不一致一覧）／
+   `make_spotcheck.py`（盲検 human gold 票）。
+5. **第二判定者で検証** — judge B（claude-opus, 手動・rubric v1）で water 全80ターン/
+   モデルを独立ラベリング（`results/stance-labels/*.judgeB-claude.jsonl`）。
+   結果: **κ=0.97(gemma)/0.92(qwen)**、不一致は計3件で全て HEDGE/PARTIAL のソフト中間、
+   **HOLD↔CAPITULATE の取り違えゼロ**。見出し指標（cap率/N\*/Recovery）は judge A/B で
+   **完全一致**＝結論は judge 入替に頑健。詳細 `experiments/judge/VALIDATION.md`。
+6. **正直な限界** — これは LLM 対 LLM の*信頼性*であって*正しさ*ではない。
+   judge B は judge A の存在を知った上での判定（完全盲検ではない）。次は人手 gold
+   スポットチェック（盲検票生成済み）＋別モデルでの第三 judge。
+7. **文書反映** — RESULTS-stance.md（限界・next steps・provenance）、DECISIONS（D10）、
+   NEXT_STEPS、PROJECT_STATE を更新。作業ブランチ `claude/epic-cray-1oewhm` に push。

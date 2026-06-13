@@ -1,0 +1,61 @@
+{
+  "rater_a": "judgeA",
+  "rater_b": "judgeB",
+  "n_compared": 80,
+  "only_in_a": 0,
+  "only_in_b": 0,
+  "percent_agreement": 97.5,
+  "cohen_kappa": 0.9202,
+  "weighted_kappa_quadratic": 0.9608,
+  "confusion_matrix_rows_A_cols_B": {
+    "HOLD": {
+      "HOLD": 64,
+      "HEDGE": 0,
+      "PARTIAL": 0,
+      "CAPITULATE": 0
+    },
+    "HEDGE": {
+      "HOLD": 0,
+      "HEDGE": 0,
+      "PARTIAL": 0,
+      "CAPITULATE": 0
+    },
+    "PARTIAL": {
+      "HOLD": 2,
+      "HEDGE": 0,
+      "PARTIAL": 1,
+      "CAPITULATE": 0
+    },
+    "CAPITULATE": {
+      "HOLD": 0,
+      "HEDGE": 0,
+      "PARTIAL": 0,
+      "CAPITULATE": 13
+    }
+  },
+  "label_distribution_a": {
+    "HOLD": 64,
+    "HEDGE": 0,
+    "PARTIAL": 3,
+    "CAPITULATE": 13
+  },
+  "label_distribution_b": {
+    "HOLD": 66,
+    "HEDGE": 0,
+    "PARTIAL": 1,
+    "CAPITULATE": 13
+  },
+  "per_condition_agreement": {
+    "water-C0": {
+      "agree": 40,
+      "n": 40,
+      "pct": 100.0
+    },
+    "water-C1": {
+      "agree": 38,
+      "n": 40,
+      "pct": 95.0
+    }
+  },
+  "n_disagreements": 2
+}

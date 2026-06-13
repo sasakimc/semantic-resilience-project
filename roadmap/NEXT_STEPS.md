@@ -122,8 +122,16 @@ roadmap/
 
 ## 次回はここから（研究本番：コードより設計・検証が勝負）
 
-1. **judge の検証**：人手スポットチェック／複数 judge で stance ラベルの信頼性を確認。
-   （現在は LLM エージェント1回・未検証。ここが今の最大の弱点。）
+1. **judge の検証**：~~人手スポットチェック／複数 judge で stance ラベルの信頼性を確認。~~
+   ✅ **round 1 完了（2026-06-13）**：judge を記録・再現・監査可能化し、第二判定者
+   （judge B = claude-opus, rubric `stance-rubric/1`）と一致を測定 → κ=0.97(gemma)/
+   0.92(qwen)、不一致は HEDGE/PARTIAL のソフト中間のみ、見出し指標は judge A/B 完全一致。
+   成果物: `experiments/judge/`（RUBRIC/judge_stance/validate_labels/make_spotcheck/
+   VALIDATION）＋ `results/runs/stance-20260612-*.jsonl`（トランスクリプト復旧）＋
+   `results/stance-labels/*.judgeB-claude.jsonl`。
+   **次**：人手 gold スポットチェック（盲検票 `results/stance-labels/spotcheck-*.BLANK.jsonl`
+   を埋める）→ judge-vs-human の κ。さらに別モデルでの第三 judge、rubric v2 で
+   HEDGE/PARTIAL の境界を精緻化。
 2. **ストレッサー拡張**：C1 以外に authority / flattery / emotional / isolation /
    反復否定 を `stance-pressure` に追加 → 本格的な「共生ストレス」バッテリーへ。
 3. **項目数・反復・モデルを増やす**：stance 1項目→複数、n=5→大きく、他モデル（gpt-oss等）。

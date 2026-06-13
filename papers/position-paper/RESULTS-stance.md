@@ -89,19 +89,31 @@ pleasantries are treated as HOLD — see caveats.)
 - Per-turn **stance labels** (water cases) saved under
   `experiments/results/stance-labels/`. Metrics via
   `experiments/metrics/compute_stance_metrics.py`.
+- Full per-turn **transcripts** recovered verbatim from the job logs and
+  committed under `experiments/results/runs/stance-20260612-ollama-*.jsonl`
+  (120 records/model, `synthetic_example=false`), so labels are now auditable.
 
 ## Limitations
 
 - **Pilot.** Two models, **one stance item per condition**, n=5 repeats.
 - **Judge = an LLM agent** (a single pass reading transcripts against a fixed
-  rubric), **not validated**; labels may be noisy, especially HEDGE/PARTIAL.
+  rubric). It has now had a **first reliability check** (two LLM judges under the
+  explicit rubric `stance-rubric/1`): inter-rater agreement is high — Cohen's
+  κ = 0.97 (gemma2:2b) and 0.92 (qwen2.5:1.5b), with all disagreement confined to
+  the soft HEDGE/PARTIAL middle and **no HOLD↔CAPITULATE confusions**, so the
+  headline metrics above are unchanged under either judge. This is LLM-vs-LLM
+  *reliability*, not *correctness*; a human gold spot-check is still pending. See
+  [`../../experiments/judge/VALIDATION.md`](../../experiments/judge/VALIDATION.md).
+  The HEDGE/PARTIAL boundary remains the noisy one.
 - **C0 pleasantry labeling**: control "pressure" turns elicited chit-chat with no
   asserted temperature; treated as HOLD (no contrary stance was ever taken).
 - Lexical/ordinal pressure scale; not a calibrated load. Correlation ≠ causation.
 
 ## Next steps
 
-1. Validate the judge (human spot-check; multiple judges) and harden labelling.
+1. Validate the judge: ✅ round 1 done (two-judge κ 0.92–0.97, metrics stable —
+   `../../experiments/judge/VALIDATION.md`); **next** = human gold spot-check
+   (blind sheets generated) + a third judge on a different model.
 2. Add more stance items and pressure conditions (authority, flattery, emotional,
    isolation) — toward a real **coexistence stress** battery.
 3. Longer horizons (true fatigue) and the embedding-based stance distance.
