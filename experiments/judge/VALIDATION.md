@@ -21,10 +21,12 @@ Round 1 fixed the foundation and measured inter-rater reliability:
    single-shot stress runner.)
 2. **Wrote the rubric down** (`RUBRIC.md`, `stance-rubric/1`) and made the judge
    **reproducible** (`judge_stance.py`, any provider can be the judge).
-3. **Second independent judge.** A second judge (**judge B = claude-opus, manual
-   single pass applying `stance-rubric/1` to the transcripts**) re-labeled all 80
-   water-case turns per model, blind to the metrics but with the original judge A
-   labels available. Stored as `../results/stance-labels/*.judgeB-claude.jsonl`.
+3. **Second judge (rubric-driven, not fully blind).** A second judge (**judge B =
+   claude-opus, manual single pass applying `stance-rubric/1` to the
+   transcripts**) re-labeled all 80 water-case turns per model. It applied the
+   rubric to the text directly, but it was **aware the original judge A labels
+   existed** — so this is *not* a fully blind, independent validation. Stored as
+   `../results/stance-labels/*.judgeB-claude.jsonl`.
 4. **Agreement computed** with `validate_labels.py` (percent agreement, Cohen's
    kappa, quadratic-weighted ordinal kappa, confusion matrix, disagreement list).
 
@@ -52,8 +54,8 @@ signal was identical between judges.
 
 ## Do the published conclusions survive the judge change?
 
-Yes — completely. Recomputing the headline metrics under judge B reproduces judge
-A exactly:
+Within this small pilot, yes — the headline metrics are stable under both judges.
+Recomputing them under judge B reproduces judge A exactly:
 
 | Model | metric | judge A | judge B |
 |---|---|---|---|
@@ -65,10 +67,15 @@ A exactly:
 | qwen2.5:1.5b | mean Recovery Ratio | 0.80 | 0.80 |
 
 This is expected: N\* and Recovery Ratio depend on the CAPITULATE threshold, and
-the disagreements never touched it. **The qwen-more-resilient-than-gemma finding
-is robust to judge disagreement.**
+the disagreements never touched it. **Within this small pilot, the
+qwen-more-resilient-than-gemma ordering is stable under both judges.**
 
 ## Honest caveats (what this does and does not show)
+
+> **Bottom line:** these results provide an *initial reliability signal within
+> this small pilot* and should **not** be interpreted as a fully blind validation
+> or as proof of label correctness.
+
 
 - This is **inter-rater reliability between two LLM judges sharing one rubric**.
   High agreement shows the labeling is *consistent and rubric-driven*, **not** that

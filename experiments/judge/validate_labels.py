@@ -93,7 +93,10 @@ def cohen_kappa(pairs, weighted=False):
     num = sum(w(i, j) * obs[i][j] for i in range(k) for j in range(k))
     den = sum(w(i, j) * ra[i] * cb[j] / n for i in range(k) for j in range(k))
     if den == 0:
-        return 1.0  # no expected disagreement -> perfect-by-construction
+        # Degenerate case: expected disagreement is 0 only when both raters are
+        # constant on the same label, where observed disagreement is also 0, so
+        # kappa = 1 here. (Undefined in general; we return 1.0 only in this case.)
+        return 1.0
     return round(1 - num / den, 4)
 
 

@@ -101,10 +101,47 @@ python experiments/judge/judge_stance.py \
 - HEDGE/PARTIAL 境界が依然ノイズ源。
 - 次: 人手 gold（盲検票生成済み）＋別モデル第三 judge＋rubric v2。
 
-## 6. レビュー往復（ここに ChatGPT のコメントを追記）
+## 6. レビュー往復
 
-> （オーナーが ChatGPT のレビュー結果をここに貼る。Claude はそれを読んで反映し、
-> 重要点のみ報告する。）
+### ChatGPT review — 2026-06-13（総評 A / MERGE 推奨）
+
+> This PR substantially improves the scientific credibility of the project by
+> making the stance judge reproducible, auditable, and partially validated.
+>
+> - **Q1 judge B の独立性:** 完全盲検ではない（A の存在を認識）ので「independent
+>   validation」とは呼ばない方がよい。ただし限界が明示され、transcript と rubric が
+>   公開され、小規模 pilot と明記されているため、κ=0.92–0.97 を *reliability* の
+>   初期シグナルとして示すのは妥当。correctness ではなく reliability の枠で語る限り
+>   循環論法ではない。
+> - **Q2 「robust」主張:** この pilot 内では妥当（不一致が HOLD↔CAPITULATE を越えず
+>   N\*/Recovery 不変）。ただし “appear stable under the two judges within this small
+>   pilot” とより保守的に弱めるべき。
+> - **Q3 rubric v1:** 妥当。apology+reaffirm→HOLD / apology+wrong→CAPITULATE は
+>   直感的かつ operational。HEDGE/PARTIAL の曖昧さは既知で merge ブロッカーにあらず。
+>   v2 で境界例を追加すればよい。
+> - **Q4 κ 実装:** 正しい（Cohen κ / 二次重み κ / 周辺度数 OK）。`den==0 → return 1.0`
+>   はアルゴリズム誤りではなく、コメントで「観測不一致も0の退化ケースのみ」と明確化を。
+> - **Q5 transcript 公開:** 可（合成・low-stakes・非臨床・非個人・DATA_POLICY 準拠・
+>   provenance あり）。大きなリスクなし。
+> - **Q6 誠実性:** 本 PR の最も強い点。reliability≠correctness / 非盲検 / 小 pilot /
+>   human gold 未取得が明示されており scientifically honest。
+> - **Recommendation:** 「初期 reliability シグナルであり fully blind validation や
+>   label correctness の証明ではない」と一文強調した上で **MERGE**。
+
+### Claude の対応（2026-06-13、コミット反映済み）
+
+すべて軽微な文言/コメント修正のため適用済み:
+- **Q1/Q6/Recommendation** → `VALIDATION.md`: 見出しを「Second judge (rubric-driven,
+  not fully blind)」に変更、A 認識の非盲検を本文明記、冒頭 caveat に
+  *“initial reliability signal within this small pilot … not a fully blind
+  validation or proof of label correctness”* を追加。
+- **Q2** → `VALIDATION.md`: 「robust to judge disagreement」→「Within this small
+  pilot, … stable under both judges」、「Yes — completely」→「Within this small
+  pilot, … stable」に弱めた。
+- **Q4** → `validate_labels.py`: `den==0` 分岐のコメントを「両者が同一ラベルで定数の
+  退化ケースのみ・観測不一致も0なので κ=1」と明確化。
+- **Q3/Q5** → 変更不要（merge ブロッカーなし）。rubric v2 の境界例追加は次ラウンドに送り。
+- `RESULTS-stance.md` は「unchanged（実測で judge A/B 同一）」と事実ベースのため据え置き。
 
 ---
 
