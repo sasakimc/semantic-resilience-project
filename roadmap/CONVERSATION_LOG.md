@@ -136,6 +136,15 @@ _作成: 2026-06-07_
     レジリエンス≠正答能力。`RESULTS.md`／`RESULTS-stance.md`／figures／
     stance-labels を公開。`origin/main` = `01684bd` で本日終了。
 
+25. **リブランド & ドキュメント化（2026-06-13）** — リポジトリを
+    **Semantic Resilience Project**（slug `semantic-resilience-project`）に改名
+    （docs-only リファクタ：README/CITATION/LICENSING/論文/roadmap を新名・
+    新フレーム名 "Semantic Resilience Framework" に更新、Semantic Mode Theory は
+    理論として維持、コード識別子・workflow は据え置き）。GitHub 側 rename・
+    Description・Topics も整合。直接 main push が不調になり PR #9 経由でマージ。
+    セッション長大化のため `roadmap/PROJECT_STATE.md`（全体スナップショット）を作成。
+    `origin/main` = `84c3c40`。
+
 ## 進め方のパターン（このプロジェクトの流儀）
 
 - 作業はブランチ `claude/charming-cerf-3qhsN` で行い、PR を作ってユーザーが
