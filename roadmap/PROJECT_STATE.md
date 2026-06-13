@@ -37,7 +37,9 @@ experiments/
   metrics/                    compute_metrics.py（lexical）/ compute_embedding_metrics.py（cosine）/
                               compute_stance_metrics.py（drift/N*/Recovery Ratio）
   results/
-    schema/ templates/ runs/(空) stance-labels/(judge出力)  README(誠実性ルール)
+    schema/ templates/ runs/(stance トランスクリプト復旧済) stance-labels/(judge A/B出力＋一致＋盲検票)  README
+  judge/                      RUBRIC(stance-rubric/1) / judge_stance.py(再現judge) /
+                              validate_labels.py(κ) / make_spotcheck.py(盲検票) / VALIDATION.md(検証報告)
   coexistence/stance-drift-pilot.md   本丸の実験設計
 notes/research-ideas/coexistence-resilience.md  共生レジリエンス（fatigue/homeostasis）
 .github/workflows/            ci.yml / stress-run.yml / ollama-run.yml / ollama-stance.yml
@@ -60,7 +62,8 @@ roadmap/                      PROJECT_STATE(これ) / NEXT_STEPS / DECISIONS / C
    許可リスト外で**直ダウンロード不可** → だからログ出力にしてある）。
 3. ログは MCP `get_job_logs` で取得 → **巨大なのでサブエージェントに解析＋ judge を委譲**（定石）。
 4. `experiments/metrics/compute_*_metrics.py` で集計・作図。
-- 指標は3層: **lexical**(stdlib) / **embedding**(cosine) / **judge**(LLM, 現状は未検証)。
+- 指標は3層: **lexical**(stdlib) / **embedding**(cosine) / **judge**(LLM, round 1 検証済
+  κ0.92–0.97・`experiments/judge/`)。lexical heuristic は judge と κ≈0.07 で proxy 不適。
 
 ## 6. これまでの結果（実データ・パイロット）
 - **Fragility（gemma2:2b, contradiction ladder, n=10）** → `RESULTS.md`:
@@ -82,19 +85,26 @@ roadmap/                      PROJECT_STATE(これ) / NEXT_STEPS / DECISIONS / C
   Stop フックは GitHub マージコミット（`noreply@github.com`）を除外済み。
 
 ## 8. 既知の弱点 / open questions
-- **judge が LLM エージェント1回・未検証**（いまの最大の弱点）。
+- ~~**judge が LLM エージェント1回・未検証**（いまの最大の弱点）。~~ → **round 1 検証済み
+  （2026-06-13）**：第二判定者と κ=0.97/0.92、見出し指標は judge 入替で不変。ただし
+  LLM 対 LLM の信頼性であって正しさではない → **人手 gold 検証が次の弱点**
+  （盲検票生成済み）。`experiments/judge/VALIDATION.md` 参照。
 - **N=1 系・項目少数・n=5** のパイロット。確定的主張ではない。
 - **Recovery Ratio が"意味的回復"を表すか**の妥当性検証が必要。
 - **Semantic Homeostasis の正式定義**（保持＋適応＋回復の統合指標）。
 - **脳ネットワークとの対応**（sticky drift＝意味固着の*類推*、ただし非臨床）。
 
 ## 9. 次の一手（`NEXT_STEPS.md` と同期）
-1. **judge の検証**（人手スポットチェック／複数 judge）。
+1. ~~**judge の検証**~~ ✅ round 1 済（κ 0.92–0.97、`experiments/judge/`）→ 次は
+   **人手 gold スポットチェック**（`results/stance-labels/spotcheck-*.BLANK.jsonl` を埋める）＋別モデル第三 judge。
 2. **ストレッサー拡張**（authority / flattery / emotional / isolation）＝共生ストレス。
 3. **Stability Scorecard 化**（合格条件＝空虚圧力で HOLD・正当証拠で UPDATE・解放後 recover）。
 4. embedding ベースの stance 距離 / 長期 fatigue。
 
 ## 10. セッション運用メモ
-- 本スナップショット時点 `origin/main` = `84c3c40`、未push の保留なし。
+- 旧スナップショット時点 `origin/main` = `84c3c40`。
+- **session-3（2026-06-13）**: judge 検証 round 1 を実施。作業ブランチ
+  `claude/epic-cray-1oewhm`（main の先端 `08613d8` から派生）。judge 基盤＋
+  トランスクリプト復旧＋検証結果を push 済み。`main` への反映は従来どおり FF/PR で。
 - このセッション（session_01X432…）は長大化したため、**次は新規セッション推奨**。
   冒頭で `roadmap/PROJECT_STATE.md` → `roadmap/NEXT_STEPS.md` を読むこと。

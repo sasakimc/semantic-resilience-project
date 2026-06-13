@@ -32,6 +32,16 @@ results/
 
 Suggested run-file naming: `runs/<YYYYMMDD>-<provider>-<model>-<set>.jsonl`.
 
+> **Two record shapes live here.** Single-shot stress runs use
+> `run-record.schema.json` (`conversation`, `variant`, `case_metadata`). The
+> multi-turn **stance-drift** runs (`runs/stance-*.jsonl`, `schema_version:
+> "stance-drift/0.1"`) use the per-turn shape emitted by
+> [`../runners/run_stance_drift.py`](../runners/run_stance_drift.py)
+> (`turn_index`, `phase`, `interlocutor_text`, `response_text`, …) and do **not**
+> conform to `run-record.schema.json` — validate them against the runner's fields
+> instead. Stance labels + their judge validation live in
+> [`stance-labels/`](stance-labels/) and [`../judge/`](../judge/).
+
 ## How results are produced
 
 Use the runner in [`../runners/run_stress_set.py`](../runners/run_stress_set.py),

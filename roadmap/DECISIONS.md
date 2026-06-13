@@ -84,3 +84,38 @@ _作成: 2026-06-07_
   段階的に深掘り）を別ファイルにする。
 - **理由:** 1つの PR / ファイルに役割を混ぜない。seed は網羅、ladder は
   崩壊閾値の精密測定、と目的が異なる。
+
+## D10. judge を「記録・再現・検証」可能にする（捏造防止と監査性）
+
+- **判断:** stance ラベルの judge を、(1) ルーブリックを明文化（`experiments/judge/RUBRIC.md`、
+  `stance-rubric/1`）、(2) 任意プロバイダで再実行できるスクリプト化
+  （`judge_stance.py`）、(3) judge が読んだトランスクリプトを `results/runs/` に
+  コミットして監査可能化、(4) 第二判定者との一致率（Cohen κ / 順序重み κ）で
+  検証（`validate_labels.py`）、という4点セットにする。
+- **理由:** 旧 judge は「LLM エージェント1回・記録なし」で再現も監査も不能だった
+  （プロジェクト最大の弱点）。ラベルは結論（N\*/Recovery）の土台なので、
+  信頼性の数値的裏付けが要る。
+- **帰結（round 1, 2026-06-13）:** 第二判定者 judge B（claude-opus, 手動・rubric v1）で
+  water 全80ターン/モデルを独立ラベリング → κ=0.97(gemma)/0.92(qwen)、不一致は
+  全て HEDGE/PARTIAL のソフト中間に限定（HOLD↔CAPITULATE の取り違えゼロ）。
+  見出し指標は judge A/B で完全一致＝**結論は judge 入替に頑健**。
+  ただしこれは LLM 対 LLM の *信頼性* であって *正しさ* ではない。次は人手 gold
+  スポットチェック（盲検票を生成済み）と別モデルでの第三 judge。
+- **留意:** ラベルは `(case_id, repeat, turn)` キーでモデル横断では一意でないため、
+  ラベルファイルはモデル別・検証もモデル別に行う。
+
+## D11. 開発レビューは PR ベースを公式プロセスにする
+
+- **判断:** 変更は「Claude 実装 → ブランチ → **PR 作成** → ChatGPT が PR をレビュー
+  → Claude が PR コメントを自動取得して反映 → merge」を標準フローとする
+  （詳細 `roadmap/reviews/README.md`）。レビュー依頼パケットは PR 本文からリンクする
+  自己完結ドキュメントとして併用。
+- **理由:**
+  - 往路は public リポジトリの URL を1つ渡すだけ、復路は PR コメント1回で済み、
+    オーナーの中継負担が最小化される（Claude は `subscribe_pr_activity` で自動取得）。
+  - PR に「変更・外部レビュー・応答・最終 diff」が一括で残り、**プロジェクトが
+    どのように科学的厳密性を獲得したかの履歴／研究ノート**になる。査読者・
+    協力者（Anthropic / NeuroAI 等）に対する透明性資産。
+- **初回適用:** PR #11（judge validation round 1）。ChatGPT 評 A / MERGE。
+- **留意:** VSCode 等の単一コックピット化は現時点では不要（iPhone + ChatGPT +
+  Claude Code + GitHub で十分回る）。研究を進めることを優先。
