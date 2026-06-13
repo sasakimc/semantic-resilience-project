@@ -62,6 +62,11 @@ roadmap/
 
 ## 確定した方針
 
+- **リポジトリ名は Semantic Resilience Project に改名済み**（slug `semantic-resilience-project`、
+  2026-06-13）。中核理論＝**Semantic Mode Theory**（内部維持）、実証フレーム＝
+  **Semantic Resilience Framework**。新URL: https://github.com/sasakimc/semantic-resilience-project
+  （旧 `llm_testing_research` は自動リダイレクト）。コード識別子・ファイル名・
+  workflow `name:` は据え置き（挙動不変）。
 - README は英語が正（国際公開向け）。日本語は `README.ja.md` にミラー。
 - `roadmap/` 配下の作業記録は日本語で統一。
 - 二本柱: **Semantic Mode Theory**（説明）＋ **Semantic Resilience Framework**（実証）。
