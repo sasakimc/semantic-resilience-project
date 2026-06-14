@@ -43,7 +43,8 @@ experiments/
   coexistence/stance-drift-pilot.md   本丸の実験設計
 notes/research-ideas/coexistence-resilience.md  共生レジリエンス（fatigue/homeostasis）
 .github/workflows/            ci.yml / stress-run.yml / ollama-run.yml / ollama-stance.yml
-roadmap/                      PROJECT_STATE(これ) / NEXT_STEPS / DECISIONS / CONVERSATION_LOG
+roadmap/                      PROJECT_STATE(これ) / NEXT_STEPS / DECISIONS / CONVERSATION_LOG /
+                              OVERVIEW(.md/.ja: 考え方の地図＝Heidegger/Alexander/Umwelt の枠) / reviews/(外部レビュー)
 ```
 **注意（挙動不変のため据え置き）**: `run_stress_set.py` / `stress-run.yml` / `stress-pressure.v0.jsonl` /
 スキーマ文字列 `stance-drift/0.1` 等の "stress" を含む識別子・ファイル名は改名していない。
