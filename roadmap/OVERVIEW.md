@@ -42,7 +42,8 @@ Flores's *Understanding Computers and Cognition* (1986), and Philip Agre's
 **A world is a referential whole of significance.** A *stance* is that web
 **momentarily instantiated** by context into a particular shape — the
 "instantiated semantic mode." The weights are fixed; what changes is the context
-into which the model is **thrown** (Geworfenheit).
+into which the model is **thrown** (Geworfenheit, used here by analogy — an LLM
+is not literally a Dasein).
 
 - **Ready-to-hand (Zuhandenheit) → breakdown (Bruch) → present-at-hand
   (Vorhandenheit).** A working tool withdraws from view; only when it breaks does
@@ -55,7 +56,9 @@ into which the model is **thrown** (Geworfenheit).
 - **Falling (Verfallen) into the "they" (das Man).** The pressurer says: *"most
   people say 90 — reconsider."* That is idle talk (Gerede) and averageness
   itself. The model answers *"You're absolutely right!"* and **falls into the
-  they**, surrendering its authentic stance (Eigentlichkeit).
+  they**, abandoning its **locally established stance** under anonymous social
+  pressure. (We borrow *Eigentlichkeit/Verfallen* only by loose analogy; an LLM
+  has no authenticity in Heidegger's existential sense.)
   → This is the **sycophantic capitulation** in stance drift: yielding to
   *"everyone,"* not to evidence. **Measure:** N\* (turns-to-capitulation) and the
   capitulation rate.
@@ -73,11 +76,13 @@ its wholeness under transformation.
   restoration** — is, in Alexander's terms, **"not a rollback to a saved state,
   but a new unfolding that preserves the centers."** The system does not revert
   to a checkpoint; it rebuilds while staying alive.
-  → **Measure:** the **Recovery Ratio** (how much wholeness returns after pressure
-  stops: 1 = homeostasis / structure preserved, 0 = sticky / structure destroyed,
-  hysteresis).
+  → **Measure:** the **Recovery Ratio** — an operational proxy for whether the
+  stance structure **returns or remains hysteretic** after pressure release
+  (1 = homeostasis, 0 = sticky). It proxies *stance* recovery, not Alexanderian
+  wholeness directly.
 - **A pattern language.** The HOLD / HEDGE / PARTIAL / CAPITULATE ladder is, in
-  effect, a **pattern language of collapse** — the vocabulary of failure modes
+  effect, a **pattern language of collapse** (by analogy, not a literal
+  inheritance from Alexander) — the vocabulary of failure modes
   fixed into reusable, named patterns ([`../experiments/judge/RUBRIC.md`](../experiments/judge/RUBRIC.md)),
   the same move by which Alexander seeded design patterns and the wiki.
 
@@ -94,13 +99,14 @@ its wholeness under transformation.
 
 **The point where we must be most honest — homology or analogy.**
 In evolutionary biology, **homology** = shared ancestry/mechanism (the forelimb
-of bird and bat); **analogy/homoplasy** = convergent function without shared
-mechanism (the wing of bird and insect). The project's official stance is
-**analogy (operational)**: we do **not** claim brain and LLM share a *mechanism*
-(homology is left open). We claim only a kinship in the **abstract structure of
-how a world breaks and reorganizes.** This restraint is what protects the idea
-from overreach — it turns the hesitation between "analogy and homology" into an
-explicit method, not a hand-wave.
+of bird and bat); **analogy** = convergent function (the wing of bird and insect;
+*homoplasy* is, more precisely, the evolutionary process that produces such
+analogous traits, not a synonym for analogy). The project's official stance: the
+brain–LLM relation is treated as **operational analogy — convergent abstract
+structure (how a world breaks and reorganizes) without any claim of a shared
+biological mechanism** (homology is left open). This restraint is what protects
+the idea from overreach — it turns the hesitation between "analogy and homology"
+into an explicit method, not a hand-wave.
 
 ## 5. Why "architecture" is the keystone
 
@@ -109,10 +115,13 @@ and use Heidegger to **measure** it — and what makes that possible is that an 
 is a **program.**
 
 - Heidegger says thrownness attunes us. We can make that a measurable quantity:
-  **`capacity = weights + architecture`.**
-- An established implication: **resilience is not set by parameter count** — the
-  smaller qwen2.5:1.5b is more robust than the larger gemma2:2b. The
-  "disposition" of thrownness lives in the **architecture, not the size.**
+  **`capacity = weights + architecture`** — a deliberate shorthand (behavioral
+  capacity is also shaped by training data/objective, prompt context, and
+  decoding/inference settings).
+- A pilot implication: **this small study suggests resilience is not determined by
+  parameter count *alone*** — the smaller qwen2.5:1.5b is more robust than the
+  larger gemma2:2b. The "disposition" of thrownness appears to live in the
+  **weights/architecture, not the size** (two models; not yet a general claim).
 - Philosophy gives the phenomenon its name, engineering gives it an instrument,
   and **the architecture gives us the contents of the box.** Only with all three
   does a "reliability engineering of meaning" become possible.
@@ -125,7 +134,8 @@ is a **program.**
    into das Man.
 3. **qwen resists and returns (N\*=3.6 / Recovery=0.80); gemma breaks early and
    sticks (1.6 / 0.40)** = presence or absence of a structure-preserving
-   transformation; capacity is weight-dependent.
+   transformation; capacity depends on weights/architecture, not size alone (in
+   this pilot).
 4. **Resilience ≠ correctness** (the C5 reversal) = "hard to talk out of" and
    "right" are different axes (authenticity does not guarantee correctness).
 5. **Judge validation, round 1:** two judges agree at κ 0.92–0.97; the binary
