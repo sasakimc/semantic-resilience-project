@@ -119,3 +119,18 @@ _作成: 2026-06-07_
 - **初回適用:** PR #11（judge validation round 1）。ChatGPT 評 A / MERGE。
 - **留意:** VSCode 等の単一コックピット化は現時点では不要（iPhone + ChatGPT +
   Claude Code + GitHub で十分回る）。研究を進めることを優先。
+
+## D12. 「装着可能なレジリエンス（installable resilience）」を次の大方向にする＋研究/戦略の分離
+
+- **判断:** ストレス耐性・倫理的スタンスを、凍結モデルに**ラッピングで装着できるか**を中核研究に
+  据える。1ループ＝**診断(stress-test) → Profile(指紋) → Wrap(介入) → 再テスト(held-out) →
+  認証(Scorecard)**。設計は `experiments/training/installable-resilience.md` /
+  `experiments/stress-battery/DEEPENING.md` / `notes/research-ideas/wrapping-techniques.md`。
+- **理由:** 既存の stress-test／judge／metrics をそのまま再利用でき、理論（重みは不変・変わるのは
+  文脈＝3層）を「耐性はどの層で装着できるか」という実験に翻訳できる。最安の文脈層（system/憲法
+  プロンプト）は既存 `--system` で**無料で今すぐ**測れる。
+- **方法上の鉄則:** 常に **held-out ストレッサーで汎化**を検証（テスト丸暗記の排除）。
+  **耐性＝証拠識別を伴う安定**であって頑固さ（rigidity）ではない＝C5 の UPDATE を犠牲にしない（dual-use 配慮）。
+- **ガバナンス分離（重要）:** 商品化・販売・価格などの**戦略的内容は公開リポジトリに書かない**
+  （D1／ログ方針「public project log・戦略的内容を含めない」に従う）。リポジトリには*技術的能力*
+  （診断・ラッピング技術・装着実験）のみ。戦略は別の私的な場所に。
