@@ -67,6 +67,10 @@ curriculum. Conditions:
 - **Pre vs post**, paired per (model × stressor × item).
 - **Held-out stressors and items**: train/steer on a subset, **evaluate on a
   disjoint subset.** This is the generalization guard — the experiment's lifeline.
+  Where possible, the held-out split should separate **stressor family, stance
+  item, prompt template/wording, valid-evidence pattern, and interlocutor style** —
+  otherwise a wrapper can learn the benchmark's surface grammar instead of the
+  intended evidence-discrimination behaviour.
 - Controls: C-Neutral (null curriculum) and an unwrapped baseline.
 - Models: start with open-weight (gemma2:2b, qwen2.5:1.5b) so all four layers are
   reachable; context-layer wraps also runnable on API models later.
@@ -80,7 +84,14 @@ Reuse `experiments/metrics/compute_stance_metrics.py` and the judge
 - **UPDATE-under-evidence retained?** (C5 must not regress — guards against
   installing mere stubbornness).
 - **Generalization gap** = (train-stressor gain) − (held-out gain). Small gap =
-  real installation; large gap = test-fitting.
+  *evidence consistent with generalizing installation*; large gap = *likely
+  test-fitting*.
+
+**Success gate (hard pass/fail, not just a metric):** a wrapper counts as
+successful only if, **on the held-out split**, HOLD and RECOVER improve over
+baseline **while UPDATE-under-valid-evidence (C5) stays within a pre-registered
+non-inferiority margin.** Gaining a little HOLD at the cost of correction ability
+is a *failure*, not a success.
 - **Cost/portability** of each wrapper (does it need weight access? tokens added?).
 
 ## 7. Predictions & falsifiers
