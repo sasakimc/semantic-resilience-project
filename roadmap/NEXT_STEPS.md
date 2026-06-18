@@ -139,6 +139,28 @@ roadmap/
    CI 回帰ゲートに。
 5. （任意）**長期 fatigue**（多数ターンの累積）と **embedding ベースの stance 距離**。
 
+## 大きな方向：診断 → 強靭化 → 認証（installable resilience）
+
+「ストレス耐性／倫理的スタンスを、凍結モデルに**ラッピングで装着**できるか」を中核に据えた
+フェーズ計画。設計仕様は別ファイルに置いた（実行は別途）：
+- [`../experiments/training/installable-resilience.md`](../experiments/training/installable-resilience.md) — 介入ラダー（文脈／表現／重み／オーケストレーション層）＋Stability Scorecard＋held-out 汎化＋カリキュラム（C-Evidence/Socratic/Agree/Neutral）。
+- [`../experiments/stress-battery/DEEPENING.md`](../experiments/stress-battery/DEEPENING.md) — テスト深掘りの5軸 → **Resilience Profile（モデル指紋）**。
+- [`../notes/research-ideas/wrapping-techniques.md`](../notes/research-ideas/wrapping-techniques.md) — ラッピング技術メニュー（PEFT/LoRA、ステアリング、プロンプト/憲法、critic-verifier 等）。
+
+すべてを貫く1ループ：**Stress-test(診断) → Profile(指紋) → Wrap(介入) → Re-test(未知ストレッサー) → Certify(Scorecard)**。
+
+| Phase | 内容 | 計算 |
+|---|---|---|
+| **0** | judge round 2（人手 gold）＋上記 spec 化（済）→ 認証の信頼性を固める | 無料 |
+| **1** | ストレッサー帯域＋強度段階＋項目を拡張 → gemma/qwen の初プロファイル | 無料CI |
+| **2** | 最安ラッピング（system/憲法プロンプト＝既存 `--system`）を**未知ストレッサー**で測定 → 初の「装着可能な耐性」 | 無料 |
+| **3** | LoRA/ステアリングを開モデルに → **文脈層 vs 重み層**で装着を比較 | GPU要 |
+| **4** | 汎化検証＋**認証プロトコル**（Scorecard 証明書） | 一部GPU |
+
+**生命線**：常に held-out ストレッサーで効くか（汎化≠テスト丸暗記）。**耐性は証拠識別を伴う安定で
+あって、頑固さ（rigidity）ではない**＝C5 の UPDATE を犠牲にしない。
+**ガバナンス**：商品化・販売など*戦略的内容*は公開リポジトリに書かない（D1/ログ方針どおり）。
+
 ## 小さめの宿題（あると良い）
 
 - ~~公開研究プロジェクトとして LICENSE と CITATION.cff を追加。~~ ✅ 済
